@@ -21,7 +21,14 @@
     </p>
   }
 
-  <div class="faixas">
+  @if (!carregando() && !vendoAFaixaCompleta()) {
+    <p class="aviso">
+      A ordem não pode ser mudada enquanto a lista esconde tarefas — arrastar aqui poria o
+      card num lugar diferente do que você soltou.
+    </p>
+  }
+
+  <div class="faixas" cdkDropListGroup>
     @for (faixa of faixas(); track faixa.prioridade) {
       <section class="faixa" [attr.data-prioridade]="faixa.prioridade">
         <h2>
@@ -29,30 +36,47 @@
           <span class="contagem">{{ faixa.tarefas.length }}</span>
         </h2>
 
-        @for (tarefa of faixa.tarefas; track tarefa.id) {
-          <mat-card class="cartao" appearance="outlined" [class.concluida]="concluida(tarefa)">
-            <mat-card-content>
-              <p class="titulo">{{ tarefa.titulo }}</p>
+        <!-- A lista inteira e area de soltura, inclusive vazia: e por isso que a API
+             devolve sempre as tres faixas. -->
+        <div
+          class="lista"
+          cdkDropList
+          [cdkDropListData]="faixa"
+          [cdkDropListDisabled]="!vendoAFaixaCompleta()"
+          (cdkDropListDropped)="soltar($event)"
+        >
+          @for (tarefa of faixa.tarefas; track tarefa.id) {
+            <mat-card
+              class="cartao"
+              appearance="outlined"
+              [class.concluida]="concluida(tarefa)"
+              cdkDrag
+              [cdkDragData]="tarefa"
+            >
+              <mat-card-content>
+                <p class="titulo">{{ tarefa.titulo }}</p>
 
-              @if (tarefa.descricao) {
-                <p class="descricao">{{ tarefa.descricao }}</p>
-              }
-
-              <div class="marcas">
-                <span class="status">{{ rotuloDoStatus(tarefa) }}</span>
-                @if (tarefa.categoria) {
-                  <mat-chip-set>
-                    <mat-chip>{{ tarefa.categoria.nome }}</mat-chip>
-                  </mat-chip-set>
+                @if (tarefa.descricao) {
+                  <p class="descricao">{{ tarefa.descricao }}</p>
                 }
-              </div>
-            </mat-card-content>
-          </mat-card>
-        } @empty {
-          <!-- Faixa vazia continua aparecendo: e area de soltura do arrastar, e a API a
-               devolve justamente por isso. -->
-          <p class="vazia">Nada aqui.</p>
-        }
+
+                <div class="marcas">
+                  <span class="status">{{ rotuloDoStatus(tarefa) }}</span>
+                  @if (tarefa.categoria) {
+                    <mat-chip-set>
+                      <mat-chip>{{ tarefa.categoria.nome }}</mat-chip>
+                    </mat-chip-set>
+                  }
+                </div>
+              </mat-card-content>
+
+              <!-- O espaco que o card deixa enquanto esta sendo arrastado. -->
+              <div class="lugar-vago" *cdkDragPlaceholder></div>
+            </mat-card>
+          } @empty {
+            <p class="vazia">Nada aqui.</p>
+          }
+        </div>
       </section>
     }
   </div>
