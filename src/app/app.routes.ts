@@ -18,6 +18,13 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/tarefas/tarefas').then((m) => m.Tarefas),
     title: 'Tarefas - todo-notes',
   },
+  {
+    path: 'preferencias',
+    canActivate: [guardaDeSessao],
+    loadComponent: () =>
+      import('./pages/preferencias/preferencias').then((m) => m.TelaDePreferencias),
+    title: 'Preferências - todo-notes',
+  },
   { path: '', pathMatch: 'full', redirectTo: 'tarefas' },
 
   // Qualquer outro caminho cai na lista, e a guarda decide: quem tem sessão vê as tarefas,
