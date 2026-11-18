@@ -1,0 +1,98 @@
+.espaco {
+  flex: 1 1 auto;
+}
+
+.dono {
+  margin-right: 0.75rem;
+  opacity: 0.85;
+  font-size: 0.875rem;
+}
+
+.pagina {
+  padding: 1rem;
+}
+
+.erro {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--mat-sys-error);
+}
+
+.faixas {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  align-items: start;
+}
+
+.faixa h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  // A barra colorida é a prioridade, e por isso a cor não vem do tema: ela é semântica.
+  // Trocar a paleta do Material não pode mudar o que "alta" significa.
+  padding-left: 0.5rem;
+  border-left: 4px solid var(--cor-da-faixa, var(--mat-sys-outline));
+}
+
+.faixa[data-prioridade='ALTA'] {
+  --cor-da-faixa: #c62828;
+}
+
+.faixa[data-prioridade='MEDIA'] {
+  --cor-da-faixa: #ef6c00;
+}
+
+.faixa[data-prioridade='BAIXA'] {
+  --cor-da-faixa: #2e7d32;
+}
+
+.contagem {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.cartao {
+  margin-bottom: 0.5rem;
+}
+
+.titulo {
+  margin: 0;
+  font-weight: 500;
+}
+
+// Concluída fica na lista, riscada: é o registro do que foi feito, não lixo a esconder.
+.cartao.concluida .titulo {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.descricao {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  opacity: 0.8;
+  white-space: pre-wrap;
+}
+
+.marcas {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.status {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.vazia {
+  font-size: 0.875rem;
+  opacity: 0.6;
+}

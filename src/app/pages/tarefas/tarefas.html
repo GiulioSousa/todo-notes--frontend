@@ -1,0 +1,59 @@
+<!-- Sem `color="primary"`: no Material 3 o atributo nao faz nada, e a barra usa a superficie
+     do tema. Deixa-lo sugeriria uma intencao que o framework ignora. -->
+<mat-toolbar>
+  <span>todo-notes</span>
+  <span class="espaco"></span>
+  @if (usuario()) {
+    <span class="dono">{{ usuario() }}</span>
+  }
+  <button matButton (click)="sair()">Sair</button>
+</mat-toolbar>
+
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<main class="pagina">
+  @if (erro()) {
+    <p class="erro" role="alert">
+      {{ erro() }}
+      <button matButton (click)="carregar()">Tentar de novo</button>
+    </p>
+  }
+
+  <div class="faixas">
+    @for (faixa of faixas(); track faixa.prioridade) {
+      <section class="faixa" [attr.data-prioridade]="faixa.prioridade">
+        <h2>
+          {{ rotuloDaFaixa(faixa) }}
+          <span class="contagem">{{ faixa.tarefas.length }}</span>
+        </h2>
+
+        @for (tarefa of faixa.tarefas; track tarefa.id) {
+          <mat-card class="cartao" appearance="outlined" [class.concluida]="concluida(tarefa)">
+            <mat-card-content>
+              <p class="titulo">{{ tarefa.titulo }}</p>
+
+              @if (tarefa.descricao) {
+                <p class="descricao">{{ tarefa.descricao }}</p>
+              }
+
+              <div class="marcas">
+                <span class="status">{{ rotuloDoStatus(tarefa) }}</span>
+                @if (tarefa.categoria) {
+                  <mat-chip-set>
+                    <mat-chip>{{ tarefa.categoria.nome }}</mat-chip>
+                  </mat-chip-set>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+        } @empty {
+          <!-- Faixa vazia continua aparecendo: e area de soltura do arrastar, e a API a
+               devolve justamente por isso. -->
+          <p class="vazia">Nada aqui.</p>
+        }
+      </section>
+    }
+  </div>
+</main>
