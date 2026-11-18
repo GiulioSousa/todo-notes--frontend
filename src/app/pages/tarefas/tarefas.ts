@@ -10,12 +10,19 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { mensagemDoErro } from '../../core/erros';
-import { Faixa, FiltroDeConcluidas, Preferencias, Tarefa } from '../../core/modelos';
+import { Categoria, Faixa, FiltroDeConcluidas, Preferencias, Tarefa } from '../../core/modelos';
 import { SessaoService } from '../../core/sessao.service';
+import {
+  DadosDoFormulario,
+  FormularioDeTarefa,
+  ResultadoDoFormulario,
+} from './formulario-de-tarefa';
 
 /**
  * A lista, em três faixas, com o arrastar.
@@ -42,9 +49,11 @@ import { SessaoService } from '../../core/sessao.service';
 export class Tarefas implements OnInit {
   private readonly api = inject(ApiService);
   private readonly sessao = inject(SessaoService);
+  private readonly dialogo = inject(MatDialog);
 
   readonly usuario = this.sessao.usuario;
   readonly faixas = signal<Faixa[]>([]);
+  readonly categorias = signal<Categoria[]>([]);
   readonly preferencias = signal<Preferencias | null>(null);
   readonly carregando = signal(true);
   readonly erro = signal<string | null>(null);
@@ -87,19 +96,71 @@ export class Tarefas implements OnInit {
     this.erro.set(null);
 
     try {
-      // As duas juntas: sem as preferências não dá para saber se a faixa está completa.
-      const [lista, preferencias] = await Promise.all([
+      // As três juntas: sem as preferências não dá para saber se a faixa está completa, e
+      // sem as categorias o formulário não sabe quais nomes já existem.
+      const [lista, preferencias, categorias] = await Promise.all([
         this.api.listarTarefas(this.categoriaFiltrada(), this.filtroDeConcluidas()),
         this.api.buscarPreferencias(),
+        this.api.listarCategorias(),
       ]);
 
       this.faixas.set(lista.faixas);
       this.preferencias.set(preferencias);
+      this.categorias.set(categorias);
     } catch (falha) {
       this.erro.set(mensagemDoErro(falha));
     } finally {
       this.carregando.set(false);
     }
+  }
+
+  async criar(): Promise<void> {
+    const resultado = await this.abrirFormulario();
+    if (!resultado) {
+      return;
+    }
+
+    await this.comErro(async () => {
+      await this.api.criarTarefa({
+        titulo: resultado.titulo,
+        descricao: resultado.descricao,
+        prioridade: resultado.prioridade,
+        categoriaId: resultado.categoriaId,
+      });
+      await this.carregar();
+    });
+  }
+
+  /**
+   * Editar são até duas chamadas, e é a Seção 6 que manda: o `PUT` não muda prioridade, e
+   * mudar de faixa pelo formulário cai no `PATCH /lugar`, com a posição do fim da faixa de
+   * destino. É o que mantém a regra da faixa num lugar só.
+   */
+  async editar(tarefa: Tarefa): Promise<void> {
+    const resultado = await this.abrirFormulario(tarefa);
+    if (!resultado) {
+      return;
+    }
+
+    await this.comErro(async () => {
+      await this.api.editarTarefa(tarefa.id, {
+        titulo: resultado.titulo,
+        descricao: resultado.descricao,
+        categoriaId: resultado.categoriaId,
+      });
+
+      if (resultado.prioridade !== tarefa.prioridade) {
+        const destino = this.faixas().find((f) => f.prioridade === resultado.prioridade);
+
+        await this.api.moverTarefa(tarefa.id, {
+          prioridade: resultado.prioridade,
+          // O tamanho da faixa antes de o card entrar nela é, por definição, o fim dela.
+          posicao: destino?.tarefas.length ?? 0,
+        });
+      }
+
+      await this.carregar();
+    });
   }
 
   /**
@@ -170,6 +231,24 @@ export class Tarefas implements OnInit {
         return 'Média';
       case 'BAIXA':
         return 'Baixa';
+    }
+  }
+
+  private abrirFormulario(tarefa?: Tarefa): Promise<ResultadoDoFormulario | undefined> {
+    const dados: DadosDoFormulario = { tarefa, categorias: this.categorias() };
+
+    return firstValueFrom(
+      this.dialogo.open(FormularioDeTarefa, { data: dados }).afterClosed(),
+    );
+  }
+
+  /** Mostra a falha na tela em vez de deixá-la só no console do navegador. */
+  private async comErro(acao: () => Promise<void>): Promise<void> {
+    this.erro.set(null);
+    try {
+      await acao();
+    } catch (falha) {
+      this.erro.set(mensagemDoErro(falha));
     }
   }
 

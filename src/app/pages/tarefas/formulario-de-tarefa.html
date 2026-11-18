@@ -1,0 +1,68 @@
+@if (salvando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<h2 mat-dialog-title>{{ editando ? 'Editar tarefa' : 'Nova tarefa' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="formulario" class="formulario" (ngSubmit)="salvar()">
+    <mat-form-field appearance="outline">
+      <mat-label>Título</mat-label>
+      <input matInput formControlName="titulo" maxlength="120" autofocus />
+      @if (formulario.controls.titulo.hasError('required')) {
+        <mat-error>Informe o título</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Descrição</mat-label>
+      <textarea matInput formControlName="descricao" rows="3" maxlength="2000"></textarea>
+      <mat-hint align="end">Opcional</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Prioridade</mat-label>
+      <mat-select formControlName="prioridade">
+        @for (prioridade of prioridades; track prioridade) {
+          <mat-option [value]="prioridade">{{ rotuloDaPrioridade(prioridade) }}</mat-option>
+        }
+      </mat-select>
+      @if (editando) {
+        <mat-hint>Mudar a prioridade move o card para o fim da faixa de destino</mat-hint>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Categoria</mat-label>
+      <input
+        matInput
+        formControlName="categoria"
+        maxlength="40"
+        [matAutocomplete]="lista"
+        (input)="aoDigitarCategoria($any($event.target).value)"
+      />
+      <mat-autocomplete #lista="matAutocomplete">
+        @for (categoria of sugestoes(); track categoria.id) {
+          <mat-option [value]="categoria.nome">{{ categoria.nome }}</mat-option>
+        }
+      </mat-autocomplete>
+
+      @if (vaiCriarCategoria()) {
+        <mat-hint>Categoria nova: será criada ao salvar</mat-hint>
+      } @else {
+        <mat-hint>Deixe vazio para ficar sem etiqueta</mat-hint>
+      }
+    </mat-form-field>
+
+    @if (erro()) {
+      <p class="erro" role="alert">{{ erro() }}</p>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button matButton mat-dialog-close [disabled]="salvando()">Cancelar</button>
+  <button matButton="filled" (click)="salvar()" [disabled]="salvando()">
+    {{ salvando() ? 'Salvando...' : 'Salvar' }}
+  </button>
+</mat-dialog-actions>

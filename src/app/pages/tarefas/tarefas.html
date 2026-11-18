@@ -6,6 +6,7 @@
   @if (usuario()) {
     <span class="dono">{{ usuario() }}</span>
   }
+  <button matButton="filled" (click)="criar()">Nova tarefa</button>
   <button matButton (click)="sair()">Sair</button>
 </mat-toolbar>
 
@@ -46,12 +47,15 @@
           (cdkDropListDropped)="soltar($event)"
         >
           @for (tarefa of faixa.tarefas; track tarefa.id) {
+            <!-- O card inteiro abre a edicao. O CDK engole o clique depois de um arrasto,
+                 entao soltar um card nao abre o formulario sem querer. -->
             <mat-card
               class="cartao"
               appearance="outlined"
               [class.concluida]="concluida(tarefa)"
               cdkDrag
               [cdkDragData]="tarefa"
+              (click)="editar(tarefa)"
             >
               <mat-card-content>
                 <p class="titulo">{{ tarefa.titulo }}</p>
