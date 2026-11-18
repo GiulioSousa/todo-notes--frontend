@@ -1,0 +1,49 @@
+<main class="pagina">
+  <mat-card class="cartao" appearance="outlined">
+    @if (enviando()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    <mat-card-header>
+      <mat-card-title>todo-notes</mat-card-title>
+      <mat-card-subtitle>Entre para ver suas tarefas</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="formulario" (ngSubmit)="entrar()">
+        <mat-form-field appearance="outline">
+          <mat-label>Usuário</mat-label>
+          <input
+            matInput
+            formControlName="usuario"
+            autocomplete="username"
+            autocapitalize="none"
+            spellcheck="false"
+            autofocus
+          />
+          @if (formulario.controls.usuario.hasError('required')) {
+            <mat-error>Informe o usuário</mat-error>
+          } @else if (formulario.controls.usuario.hasError('maxlength')) {
+            <mat-error>No máximo 60 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Senha</mat-label>
+          <input matInput type="password" formControlName="senha" autocomplete="current-password" />
+          @if (formulario.controls.senha.hasError('required')) {
+            <mat-error>Informe a senha</mat-error>
+          }
+        </mat-form-field>
+
+        @if (erro()) {
+          <p class="erro" role="alert">{{ erro() }}</p>
+        }
+
+        <button matButton="filled" type="submit" [disabled]="enviando()">
+          {{ enviando() ? 'Entrando...' : 'Entrar' }}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</main>

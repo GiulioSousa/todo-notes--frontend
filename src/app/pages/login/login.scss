@@ -1,0 +1,26 @@
+.pagina {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 1rem;
+}
+
+.cartao {
+  width: 100%;
+  max-width: 24rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+// A cor de erro vem do tema, e não fixada aqui: trocar a paleta não pode deixar a mensagem
+// de erro ilegível.
+.erro {
+  margin: 0 0 0.5rem;
+  color: var(--mat-sys-error);
+}
