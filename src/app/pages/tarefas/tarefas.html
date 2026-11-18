@@ -58,14 +58,40 @@
               (click)="editar(tarefa)"
             >
               <mat-card-content>
-                <p class="titulo">{{ tarefa.titulo }}</p>
+                <div class="linha-do-titulo">
+                  <p class="titulo">{{ tarefa.titulo }}</p>
+
+                  <!-- O clique no menu nao pode subir ate o card, que abre a edicao. -->
+                  <button
+                    matIconButton
+                    class="acoes"
+                    [matMenuTriggerFor]="menu"
+                    (click)="$event.stopPropagation()"
+                    [attr.aria-label]="'Ações de ' + tarefa.titulo"
+                  >
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+
+                  <mat-menu #menu="matMenu">
+                    @for (status of statusPossiveis; track status) {
+                      <button
+                        mat-menu-item
+                        [disabled]="tarefa.status === status"
+                        (click)="alterarStatus(tarefa, status)"
+                      >
+                        {{ rotuloDoStatus(status) }}
+                      </button>
+                    }
+                    <button mat-menu-item class="perigo" (click)="excluir(tarefa)">Excluir</button>
+                  </mat-menu>
+                </div>
 
                 @if (tarefa.descricao) {
                   <p class="descricao">{{ tarefa.descricao }}</p>
                 }
 
                 <div class="marcas">
-                  <span class="status">{{ rotuloDoStatus(tarefa) }}</span>
+                  <span class="status">{{ rotuloDoStatus(tarefa.status) }}</span>
                   @if (tarefa.categoria) {
                     <mat-chip-set>
                       <mat-chip>{{ tarefa.categoria.nome }}</mat-chip>

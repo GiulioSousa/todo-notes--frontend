@@ -11,13 +11,26 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { mensagemDoErro } from '../../core/erros';
-import { Categoria, Faixa, FiltroDeConcluidas, Preferencias, Tarefa } from '../../core/modelos';
+import {
+  Categoria,
+  Faixa,
+  FiltroDeConcluidas,
+  Preferencias,
+  Status,
+  Tarefa,
+} from '../../core/modelos';
 import { SessaoService } from '../../core/sessao.service';
+import {
+  DadosDaConfirmacao,
+  DialogoDeConfirmacao,
+} from '../../shared/dialogo-de-confirmacao';
 import {
   DadosDoFormulario,
   FormularioDeTarefa,
@@ -40,6 +53,8 @@ import {
     MatButtonModule,
     MatCardModule,
     MatChipsModule,
+    MatIconModule,
+    MatMenuModule,
     MatProgressBarModule,
     MatToolbarModule,
   ],
@@ -212,8 +227,8 @@ export class Tarefas implements OnInit {
   }
 
   /** O rótulo que a pessoa lê; o enum é para a máquina. */
-  rotuloDoStatus(tarefa: Tarefa): string {
-    switch (tarefa.status) {
+  rotuloDoStatus(status: Status): string {
+    switch (status) {
       case 'PENDENTE':
         return 'Pendente';
       case 'EM_ANDAMENTO':
@@ -232,6 +247,48 @@ export class Tarefas implements OnInit {
       case 'BAIXA':
         return 'Baixa';
     }
+  }
+
+  readonly statusPossiveis: Status[] = ['PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDA'];
+
+  /**
+   * Troca o status. Quem grava ou limpa a data de conclusão é o servidor, com o relógio
+   * dele — o cliente manda o status e nada mais.
+   */
+  async alterarStatus(tarefa: Tarefa, status: Status): Promise<void> {
+    if (tarefa.status === status) {
+      return;
+    }
+
+    await this.comErro(async () => {
+      await this.api.alterarStatus(tarefa.id, status);
+      await this.carregar();
+    });
+  }
+
+  /**
+   * Exclui, depois de perguntar. É definitivo: não há lixeira, e o `DELETE` da API não
+   * guarda cópia. O servidor renumera a faixa no mesmo movimento.
+   */
+  async excluir(tarefa: Tarefa): Promise<void> {
+    const dados: DadosDaConfirmacao = {
+      titulo: 'Excluir a tarefa?',
+      mensagem: `"${tarefa.titulo}" será apagada definitivamente. Não há como desfazer.`,
+      confirmar: 'Excluir',
+      perigo: true,
+    };
+
+    const confirmado = await firstValueFrom(
+      this.dialogo.open(DialogoDeConfirmacao, { data: dados }).afterClosed(),
+    );
+    if (!confirmado) {
+      return;
+    }
+
+    await this.comErro(async () => {
+      await this.api.excluirTarefa(tarefa.id);
+      await this.carregar();
+    });
   }
 
   private abrirFormulario(tarefa?: Tarefa): Promise<ResultadoDoFormulario | undefined> {
