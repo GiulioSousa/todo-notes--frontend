@@ -62,7 +62,7 @@ export class SessaoService {
     } catch {
       /* armazenamento indisponível */
     }
-    void this.router.navigate(['/entrar']);
+    void this.router.navigate(['/login']);
   }
 
   private guardar(sessao: Sessao): void {

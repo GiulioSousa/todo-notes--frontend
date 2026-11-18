@@ -11,7 +11,7 @@ import { SessaoService } from './sessao.service';
 export const guardaDeSessao: CanActivateFn = () => {
   const sessao = inject(SessaoService);
 
-  return sessao.autenticado() ? true : inject(Router).createUrlTree(['/entrar']);
+  return sessao.autenticado() ? true : inject(Router).createUrlTree(['/login']);
 };
 
 /**
