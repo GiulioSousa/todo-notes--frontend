@@ -10,11 +10,15 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { mensagemDoErro } from '../../core/erros';
@@ -50,12 +54,16 @@ import {
     CdkDrag,
     CdkDropList,
     CdkDropListGroup,
+    RouterLink,
     MatButtonModule,
+    MatButtonToggleModule,
     MatCardModule,
     MatChipsModule,
+    MatFormFieldModule,
     MatIconModule,
     MatMenuModule,
     MatProgressBarModule,
+    MatSelectModule,
     MatToolbarModule,
   ],
   templateUrl: './tarefas.html',
@@ -250,6 +258,21 @@ export class Tarefas implements OnInit {
   }
 
   readonly statusPossiveis: Status[] = ['PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDA'];
+
+  /**
+   * Trocar um filtro recarrega do servidor, em vez de filtrar o que já está na memória. O
+   * motivo é a regra de ocultar concluídas: ela depende do relógio e das preferências, e
+   * quem a aplica é o caso de uso — repeti-la aqui seria mantê-la em dois lugares.
+   */
+  async filtrarPorCategoria(categoriaId: number | null): Promise<void> {
+    this.categoriaFiltrada.set(categoriaId);
+    await this.carregar();
+  }
+
+  async filtrarConcluidas(filtro: FiltroDeConcluidas): Promise<void> {
+    this.filtroDeConcluidas.set(filtro);
+    await this.carregar();
+  }
 
   /**
    * Troca o status. Quem grava ou limpa a data de conclusão é o servidor, com o relógio

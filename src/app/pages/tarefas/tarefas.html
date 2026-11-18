@@ -7,6 +7,7 @@
     <span class="dono">{{ usuario() }}</span>
   }
   <button matButton="filled" (click)="criar()">Nova tarefa</button>
+  <button matButton routerLink="/preferencias">Preferências</button>
   <button matButton (click)="sair()">Sair</button>
 </mat-toolbar>
 
@@ -21,6 +22,31 @@
       <button matButton (click)="carregar()">Tentar de novo</button>
     </p>
   }
+
+  <div class="filtros">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Categoria</mat-label>
+      <mat-select
+        [value]="categoriaFiltrada()"
+        (selectionChange)="filtrarPorCategoria($event.value)"
+      >
+        <mat-option [value]="null">Todas</mat-option>
+        @for (categoria of categorias(); track categoria.id) {
+          <mat-option [value]="categoria.id">{{ categoria.nome }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-button-toggle-group
+      [value]="filtroDeConcluidas()"
+      (change)="filtrarConcluidas($event.value)"
+      aria-label="Tarefas concluídas"
+    >
+      <mat-button-toggle value="PADRAO">Padrão</mat-button-toggle>
+      <mat-button-toggle value="TODAS">Mostrar todas</mat-button-toggle>
+      <mat-button-toggle value="NENHUMA">Ocultar concluídas</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
 
   @if (!carregando() && !vendoAFaixaCompleta()) {
     <p class="aviso">

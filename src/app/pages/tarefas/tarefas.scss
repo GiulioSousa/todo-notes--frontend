@@ -172,3 +172,15 @@
 .perigo {
   color: var(--mat-sys-error);
 }
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.filtros mat-form-field {
+  min-width: 12rem;
+}
