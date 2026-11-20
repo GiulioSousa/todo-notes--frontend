@@ -31,7 +31,7 @@ jobs:
       # workflow de CI (o GitHub nao encadeia workflows a partir do token proprio). O PR de
       # release so muda versao e CHANGELOG, entao o risco e baixo; se um dia for preciso ver
       # o CI nele, troque por um PAT em secrets.
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json

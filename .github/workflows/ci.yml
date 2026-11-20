@@ -5,6 +5,10 @@ name: CI
 # Sem banco e sem backend: os testes do frontend sao do Vitest sobre jsdom, e nenhum deles
 # chama a rede - o HttpTestingController responde no lugar dela. O que este CI prova e que o
 # projeto compila em producao e que a suite passa numa maquina que nao e a sua.
+#
+# AS VERSOES DAS ACTIONS NAO PODEM REGREDIR. checkout v7, setup-node v7 e gitleaks v3 sao os
+# majors de runtime Node 24. A geracao v4 delas roda em Node 20, que o GitHub removeu dos
+# runners em 16/09/2026: fixar uma versao anterior nao e ser conservador, e nao rodar.
 
 on:
   push:
@@ -29,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # O historico inteiro: a conferencia le mensagens, nao arvores.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -58,7 +62,7 @@ jobs:
       # O historico inteiro: o gitleaks varre commit por commit, nao a arvore atual. Um
       # segredo que entrou e saiu num commit seguinte continua no historico, e e esse o caso
       # que mais importa pegar.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -75,7 +79,7 @@ jobs:
       # A action e gratuita em repositorio de conta pessoal; o GITLEAKS_LICENSE so e exigido
       # de repositorio de organizacao.
       - name: gitleaks
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_CONFIG: .gitleaks.toml
@@ -84,10 +88,10 @@ jobs:
     name: Build e testes
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Preparar o Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           # Angular 21 pede ^20.19, ^22.12 ou ^24. A 22 e a LTS do momento.
           node-version: '22'
