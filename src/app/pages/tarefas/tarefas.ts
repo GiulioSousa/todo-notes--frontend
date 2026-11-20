@@ -1,6 +1,7 @@
 import {
   CdkDrag,
   CdkDragDrop,
+  CdkDragPlaceholder,
   CdkDropList,
   CdkDropListGroup,
   moveItemInArray,
@@ -52,6 +53,7 @@ import {
   selector: 'app-tarefas',
   imports: [
     CdkDrag,
+    CdkDragPlaceholder,
     CdkDropList,
     CdkDropListGroup,
     RouterLink,
