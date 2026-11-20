@@ -51,6 +51,35 @@ jobs:
             .github/scripts/conferir-commits.sh
           fi
 
+  segredos:
+    name: Varredura de segredos
+    runs-on: ubuntu-latest
+    steps:
+      # O historico inteiro: o gitleaks varre commit por commit, nao a arvore atual. Um
+      # segredo que entrou e saiu num commit seguinte continua no historico, e e esse o caso
+      # que mais importa pegar.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Primeiro a conferencia da convencao, que e barata. Aqui ela vale menos do que no
+      # backend - o frontend nao guarda credencial nenhuma -, e esta pelo mesmo motivo que o
+      # .gitignore daqui tem a secao de segredos: o dia em que alguem criar um .env na raiz,
+      # a regra ja esta de pe.
+      - name: Conferir a convencao do .gitignore
+        run: .github/scripts/conferir-segredos.sh
+
+      # Depois a varredura por conteudo, por padrao e por entropia. Os valores de teste
+      # versionados de proposito estao permitidos por VALOR no .gitleaks.toml.
+      #
+      # A action e gratuita em repositorio de conta pessoal; o GITLEAKS_LICENSE so e exigido
+      # de repositorio de organizacao.
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
   build:
     name: Build e testes
     runs-on: ubuntu-latest

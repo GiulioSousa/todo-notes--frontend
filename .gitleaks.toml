@@ -1,0 +1,24 @@
+# Configuracao do gitleaks, a segunda camada da varredura de segredos.
+#
+# A primeira e o .github/scripts/conferir-segredos.sh, que cobra a convencao do .gitignore.
+# Esta aqui e a que olha o CONTEUDO, por padrao e por entropia, no historico inteiro.
+#
+# As regras padrao do gitleaks ficam valendo; o que este arquivo acrescenta e uma lista de
+# valores que SAO versionados de proposito e nao podem virar alarme - todos de teste, e todos
+# escolhidos para nao se parecerem com credencial de verdade.
+#
+# A permissao e por VALOR, nao por caminho: um segredo real que aparecesse num .spec.ts
+# continuaria parando o build.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Valores de teste versionados de proposito"
+regexTarget = "match"
+regexes = [
+  # Os tokens dublados dos testes da sessao e do interceptor.
+  '''tok-\d{3}''',
+  # A senha que os testes mandam para a rota de login dublada.
+  '''senha-de-teste-publica''',
+]
