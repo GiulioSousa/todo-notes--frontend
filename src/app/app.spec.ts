@@ -7,9 +7,9 @@ import { App } from './app';
  * `ng new` gerou procurava o "Hello, frontend" da página de boas-vindas, que saiu junto com
  * ela — deixá-lo falhando, ou apagá-lo sem nada no lugar, seriam as duas saídas piores.
  *
- * <p>Os testes que importam no frontend ainda não existem: a sessão (expiração, e o
- * `localStorage` indisponível) e o interceptor (o `401` que encerra, e o que não encerra na
- * rota de login). Estão anotados no `execucao.md`.
+ * <p>Os testes que importam estão nos seus próprios arquivos: a sessão em
+ * `core/sessao.service.spec.ts`, o interceptor em `core/sessao.interceptor.spec.ts`, as
+ * guardas em `core/guardas.spec.ts` e a regra do arrastar em `pages/tarefas/arrastar.spec.ts`.
  */
 describe('App', () => {
   beforeEach(async () => {
