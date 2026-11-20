@@ -8,7 +8,9 @@ sem NgRx. **Zoneless**: não há `zone.js` nas dependências, e é por signal qu
 A estrutura é `core/` (sessão, interceptor, guardas, API e modelos), `pages/<tela>` e
 `shared/`.
 
-A API fica no seu próprio repositório, com linha de versão própria.
+A API fica em [todo-notes--api](https://github.com/GiulioSousa/todo-notes--api), com linha de
+versão própria. Na máquina de desenvolvimento este repositório é a pasta `frontend/`, ao lado
+dela.
 
 ## Pilha
 
