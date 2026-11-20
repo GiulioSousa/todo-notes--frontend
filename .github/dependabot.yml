@@ -1,0 +1,41 @@
+version: 2
+
+# Atualizacoes de dependencia e de actions, uma vez por semana.
+#
+# O `prefix: build` existe para o PR do Dependabot passar pelo conferir-commits.sh: sem ele a
+# mensagem nasce fora da convencao e o CI do proprio robo reprova. Sem escopo de proposito -
+# `deps` nao e bounded context, e a lista de escopos e de contexto, nao de ferramenta.
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: build
+    # O Angular sobe em bloco: core, cli, build, material e cdk precisam andar na mesma
+    # versao, e PRs separados para cada um nao compilariam sozinhos.
+    groups:
+      angular:
+        patterns:
+          - '@angular/*'
+          - '@angular-devkit/*'
+      rotina:
+        patterns:
+          - '*'
+        exclude-patterns:
+          - '@angular/*'
+          - '@angular-devkit/*'
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci

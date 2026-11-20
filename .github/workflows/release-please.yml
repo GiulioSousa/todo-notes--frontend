@@ -1,0 +1,38 @@
+name: release-please
+
+# Mantem aberto um PR de release e, no merge dele, cria a tag e a release.
+#
+# O que ele escreve, a partir das mensagens de commit: a versao no package.json e no
+# package-lock.json, o CHANGELOG.md e o bloco de versao do README.md. Nada disso e editado a
+# mao - a Secao 9 do ESPECIFICACOES.md diz que quem escreve a versao e o robo.
+#
+# A linha de versao deste repositorio e INDEPENDENTE da do backend: os dois sobem em ritmos
+# proprios, e as tags `vX.Y.Z` nao levam nome de componente justamente porque cada
+# repositorio tem a sua.
+#
+# O manifesto nasce em 0.0.0 de proposito: com um `feat` no intervalo, o primeiro PR lanca
+# justamente a 0.1.0 e cria a tag v0.1.0, que e como o projeto deve nascer. Se o manifesto
+# dissesse 0.1.0, o robo entenderia que ela JA saiu e o primeiro lancamento seria 0.2.0.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: PR de release
+    runs-on: ubuntu-latest
+    steps:
+      # Nota conhecida: com o GITHUB_TOKEN padrao, o PR aberto por esta action NAO dispara o
+      # workflow de CI (o GitHub nao encadeia workflows a partir do token proprio). O PR de
+      # release so muda versao e CHANGELOG, entao o risco e baixo; se um dia for preciso ver
+      # o CI nele, troque por um PAT em secrets.
+      - uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
