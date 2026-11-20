@@ -1,0 +1,87 @@
+name: CI
+
+# Build, testes e conferencia das mensagens de commit.
+#
+# Sem banco e sem backend: os testes do frontend sao do Vitest sobre jsdom, e nenhum deles
+# chama a rede - o HttpTestingController responde no lugar dela. O que este CI prova e que o
+# projeto compila em producao e que a suite passa numa maquina que nao e a sua.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  commits:
+    name: Mensagens de commit
+    runs-on: ubuntu-latest
+    steps:
+      # O historico inteiro: a conferencia le mensagens, nao arvores.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Conferir a convencao
+        env:
+          ANTERIOR: ${{ github.event.before }}
+          ZEROS: '0000000000000000000000000000000000000000'
+        run: |
+          set -euo pipefail
+          if [ -n "${GITHUB_BASE_REF:-}" ]; then
+            # Pull request: so os commits que ele traz.
+            git fetch --no-tags origin "$GITHUB_BASE_REF"
+            .github/scripts/conferir-commits.sh "origin/$GITHUB_BASE_REF..HEAD"
+          elif [ "$ANTERIOR" != "$ZEROS" ] && git cat-file -e "$ANTERIOR" 2>/dev/null; then
+            # Push em main: so o que o push trouxe.
+            .github/scripts/conferir-commits.sh "$ANTERIOR..$GITHUB_SHA"
+          else
+            # Primeiro push do repositorio: nao ha ponto anterior, entao confere tudo.
+            .github/scripts/conferir-commits.sh
+          fi
+
+  build:
+    name: Build e testes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preparar o Node
+        uses: actions/setup-node@v4
+        with:
+          # Angular 21 pede ^20.19, ^22.12 ou ^24. A 22 e a LTS do momento.
+          node-version: '22'
+          cache: npm
+
+      # `npm ci` e nao `npm install`: instala exatamente o package-lock.json, e falha se ele
+      # estiver fora de sincronia com o package.json - que e justamente o que se quer saber.
+      - name: Instalar as dependencias
+        run: npm ci
+
+      - name: Testes
+        run: npm test -- --watch=false
+
+      # A configuracao de producao e a que tem os orcamentos de tamanho: 500kB de aviso e
+      # 1MB de erro no bundle inicial. Compilar so em desenvolvimento esconderia isso.
+      - name: Build de producao
+        run: npm run build
+
+      # O Dependabot sobe versao no package.json e nao sabe que ha um README falando delas.
+      # Esta conferencia e o que impede a tabela de versoes de envelhecer em silencio.
+      - name: Conferir o bloco de versoes do README
+        run: node .github/scripts/versoes-readme.mjs --conferir
+
+      # O `prettier --check` fica de fora de proposito: app.config.ts, main.ts e tarefas.html
+      # divergem do formato desde antes de haver CI, e ligar a conferencia agora quebraria o
+      # build por formatacao em vez de por codigo. Entra quando o repositorio estiver limpo.

@@ -1,0 +1,23 @@
+# Escopos aceitos no assunto do commit, um por linha.
+#
+# Escopo e BOUNDED CONTEXT, nao camada: `tarefas`, nao `component`. A lista vem da Secao 9
+# do ESPECIFICACOES.md e e a mesma que o release-please ve ao montar o CHANGELOG. Ela e
+# diferente da do backend de proposito - o frontend tem `layout` e `api`, e nao tem
+# `usuarios` nem `db`.
+#
+# Commit sem escopo e valido - `build: inicia o projeto angular 21` esta no historico. O
+# escopo entra quando ha um contexto claro a nomear.
+#
+# `preferencias` NAO esta na lista da Secao 9 para o frontend, e esta aqui porque a tela
+# existe e o commit ac9282f ja usa esse escopo. Das duas saidas, esta foi a escolhida: o CI
+# nao pode recusar um escopo que o proprio repositorio usa. A outra e apagar esta linha e
+# acertar o commit - ai a Secao 9 fica valendo ao pe da letra.
+#
+# Linhas em branco e as que comecam com # sao ignoradas pelo conferir-commits.sh.
+
+auth
+api
+layout
+tarefas
+categorias
+preferencias
