@@ -11,7 +11,14 @@
     -->
     <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1c1917" media="(prefers-color-scheme: dark)" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!--
+      O símbolo "card arrastado", o mesmo do cabeçalho. O .ico primeiro e com `sizes`: é o que
+      o Windows e os navegadores antigos pedem (16, 32 e 48 dentro dele), e sem a medida o
+      Chrome baixa os dois. O .svg é o que aparece na aba de quem tem suporte, por ser o único
+      que não serrilha em tela de alta densidade.
+    -->
+    <link rel="icon" href="favicon.ico" sizes="48x48" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <script>
       /*

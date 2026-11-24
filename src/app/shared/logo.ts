@@ -1,22 +1,25 @@
 import { booleanAttribute, Component, input } from '@angular/core';
 
 /**
- * O símbolo: um quadrado na cor do acento, com o visto. Decorativo — vem sempre ao lado de um texto que
- * o nomeia, e um `role="img"` aqui faria o leitor de tela anunciar o nome duas vezes.
+ * O símbolo, "card arrastado", escolhido em 2026-11-24: três cards numa coluna, o do meio
+ * deslocado para fora da fila. É o arrastar e soltar entre faixas — o gesto que separa este
+ * app de uma lista qualquer —, e são três formas simples, que seguem legíveis no favicon de
+ * 16px. Os de cima e de baixo vão mais apagados para o do meio, o que está sendo movido, ler
+ * primeiro.
+ *
+ * <p>O mesmo desenho está em `public/favicon.svg` e no `favicon.ico`; mudar aqui pede mudar lá.
+ *
+ * <p>Decorativo: vem sempre ao lado de um texto que o nomeia, e um `role="img"` aqui faria o
+ * leitor de tela anunciar o nome duas vezes.
  */
 @Component({
   selector: 'app-simbolo',
   template: `
     <svg viewBox="0 0 32 32" aria-hidden="true" [style.width]="tamanho()" [style.height]="tamanho()">
       <rect width="32" height="32" rx="8" fill="var(--cor-acento)" />
-      <path
-        d="M9 16.5l4.5 4.5L23 11.5"
-        fill="none"
-        stroke="#fff"
-        stroke-width="3"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
+      <rect x="7" y="6.5" width="13" height="5" rx="2" fill="#fff" fill-opacity="0.6" />
+      <rect x="12" y="13.5" width="13.5" height="5" rx="2" fill="#fff" />
+      <rect x="7" y="20.5" width="13" height="5" rx="2" fill="#fff" fill-opacity="0.6" />
     </svg>
   `,
   styles: `
