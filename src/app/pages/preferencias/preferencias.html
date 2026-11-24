@@ -1,58 +1,53 @@
-<mat-toolbar>
-  <button matButton routerLink="/tarefas">Voltar</button>
-  <span class="espaco"></span>
-  <span>Preferências</span>
-</mat-toolbar>
-
 @if (carregando() || salvando()) {
-  <mat-progress-bar mode="indeterminate" />
+  <mat-progress-bar class="progresso" mode="indeterminate" />
 }
 
-<main class="pagina">
-  <mat-card class="cartao" appearance="outlined">
-    <mat-card-content>
-      <form [formGroup]="formulario" (ngSubmit)="salvar()">
-        <mat-slide-toggle formControlName="ocultarConcluidasAutomaticamente">
-          Ocultar tarefas concluídas automaticamente
-        </mat-slide-toggle>
+<div class="tela">
+  <h1 class="titulo-da-tela">Preferências</h1>
 
-        <p class="explicacao">
-          Com isto ligado, uma tarefa concluída some da lista depois do prazo abaixo. Ela não
-          é apagada — volta a aparecer escolhendo "Mostrar todas" na lista.
+  <section class="cartao vidro">
+    <h2>Exibição da lista</h2>
+
+    <form [formGroup]="formulario" (ngSubmit)="salvar()">
+      <mat-slide-toggle formControlName="ocultarConcluidasAutomaticamente">
+        Ocultar tarefas concluídas automaticamente
+      </mat-slide-toggle>
+
+      <p class="explicacao">
+        Com isto ligado, uma tarefa concluída some da lista depois do prazo abaixo. Ela não
+        é apagada — volta a aparecer escolhendo "Mostrar todas" na lista.
+      </p>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Dias até ocultar</mat-label>
+        <input matInput type="number" formControlName="diasParaOcultar" min="1" max="365" />
+        <mat-hint>De 1 a 365. Conta a partir do momento da conclusão, não do dia.</mat-hint>
+        @if (formulario.controls.diasParaOcultar.invalid) {
+          <mat-error>Informe um número de 1 a 365</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- O aviso de que o arrastar depende disto: e consequencia da decisao de
+           2026-11-18, e melhor dizer antes do que surpreender depois. -->
+      @if (formulario.controls.ocultarConcluidasAutomaticamente.value) {
+        <p class="aviso">
+          Enquanto esta opção estiver ligada, a lista esconde tarefas — e o arrastar fica
+          desabilitado, porque a ordem na tela deixa de ser a ordem real da faixa.
         </p>
+      }
 
-        <mat-form-field appearance="outline">
-          <mat-label>Dias até ocultar</mat-label>
-          <input matInput type="number" formControlName="diasParaOcultar" min="1" max="365" />
-          <mat-hint>De 1 a 365. Conta a partir do momento da conclusão, não do dia.</mat-hint>
-          @if (formulario.controls.diasParaOcultar.invalid) {
-            <mat-error>Informe um número de 1 a 365</mat-error>
-          }
-        </mat-form-field>
+      @if (erro()) {
+        <p class="erro" role="alert">{{ erro() }}</p>
+      }
 
-        <!-- O aviso de que o arrastar depende disto: e consequencia da decisao de
-             2026-11-18, e melhor dizer antes do que surpreender depois. -->
-        @if (formulario.controls.ocultarConcluidasAutomaticamente.value) {
-          <p class="aviso">
-            Enquanto esta opção estiver ligada, a lista esconde tarefas — e o arrastar fica
-            desabilitado, porque a ordem na tela deixa de ser a ordem real da faixa.
-          </p>
-        }
-
-        @if (erro()) {
-          <p class="erro" role="alert">{{ erro() }}</p>
-        }
-
+      <div class="acoes">
         @if (salvo()) {
           <p class="salvo" role="status">Preferências salvas.</p>
         }
-
-        <div class="acoes">
-          <button matButton="filled" type="submit" [disabled]="salvando() || carregando()">
-            Salvar
-          </button>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</main>
+        <button matButton="filled" type="submit" [disabled]="salvando() || carregando()">
+          Salvar
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

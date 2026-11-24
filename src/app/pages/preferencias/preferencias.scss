@@ -1,52 +1,61 @@
-.espaco {
-  flex: 1 1 auto;
-}
-
-.pagina {
+.tela {
   display: flex;
-  justify-content: center;
-  padding: 1rem;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .cartao {
-  width: 100%;
-  max-width: 32rem;
+  max-width: 36rem;
+  border-radius: 8px;
+
+  h2 {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--cor-borda);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--cor-texto-forte);
+  }
 }
 
 form {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding-top: 0.5rem;
+  padding: 1rem;
 }
 
 .explicacao {
   margin: 0;
   font-size: 0.875rem;
-  opacity: 0.8;
+  color: var(--cor-texto-apagado);
 }
 
 .aviso {
   margin: 0;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  background: var(--mat-sys-surface-container-high);
-  color: var(--mat-sys-on-surface-variant);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid light-dark(oklch(92.4% 0.12 95.746), oklch(41.4% 0.112 45.904));
+  border-radius: 6px;
+  background: light-dark(oklch(98.7% 0.022 95.277), rgb(70 25 1 / 0.4));
+  color: light-dark(oklch(47.3% 0.137 46.201), oklch(92.4% 0.12 95.746));
   font-size: 0.875rem;
 }
 
 .erro {
   margin: 0;
-  color: var(--mat-sys-error);
+  font-size: 0.875rem;
+  color: var(--cor-erro);
 }
 
 .salvo {
   margin: 0;
   font-size: 0.875rem;
-  opacity: 0.8;
+  color: var(--cor-acento-texto);
 }
 
 .acoes {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 1rem;
 }

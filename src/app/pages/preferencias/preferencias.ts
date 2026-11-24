@@ -1,13 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ApiService } from '../../core/api.service';
 import { mensagemDoErro } from '../../core/erros';
 
@@ -24,14 +22,11 @@ import { mensagemDoErro } from '../../core/erros';
   selector: 'app-preferencias',
   imports: [
     ReactiveFormsModule,
-    RouterLink,
     MatButtonModule,
-    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatProgressBarModule,
     MatSlideToggleModule,
-    MatToolbarModule,
   ],
   templateUrl: './preferencias.html',
   styleUrl: './preferencias.scss',

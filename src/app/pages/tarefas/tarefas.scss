@@ -1,109 +1,113 @@
-.espaco {
-  flex: 1 1 auto;
+.tela {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.dono {
-  margin-right: 0.75rem;
-  opacity: 0.85;
-  font-size: 0.875rem;
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.pagina {
-  padding: 1rem;
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+
+  mat-form-field {
+    width: 12rem;
+    --mat-form-field-container-height: 40px;
+    --mat-form-field-container-vertical-padding: 8px;
+  }
+
+  mat-button-toggle-group {
+    --mat-button-toggle-height: 40px;
+    --mat-button-toggle-label-text-size: 0.875rem;
+    --mat-button-toggle-label-text-weight: 500;
+    background: var(--cor-cabecalho);
+  }
 }
 
 .erro {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: var(--mat-sys-error);
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--cor-erro);
+}
+
+.aviso {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid light-dark(oklch(92.4% 0.12 95.746), oklch(41.4% 0.112 45.904));
+  border-radius: 6px;
+  background: light-dark(oklch(98.7% 0.022 95.277), rgb(70 25 1 / 0.4));
+  color: light-dark(oklch(47.3% 0.137 46.201), oklch(92.4% 0.12 95.746));
+  font-size: 0.875rem;
 }
 
 .faixas {
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   align-items: start;
 }
 
-.faixa h2 {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.faixa {
+  border-radius: 8px;
 
-  // A barra colorida é a prioridade, e por isso a cor não vem do tema: ela é semântica.
-  // Trocar a paleta do Material não pode mudar o que "alta" significa.
-  padding-left: 0.5rem;
-  border-left: 4px solid var(--cor-da-faixa, var(--mat-sys-outline));
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--cor-borda);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--cor-texto-forte);
+  }
 }
 
+// A cor é a prioridade, e por isso não vem do tema: ela é semântica. Trocar a paleta não
+// pode mudar o que "alta" significa.
+//
+// Mas precisa ficar longe do acento. Com a terracota (matiz 38), o vermelho (25) e o âmbar
+// (70) de antes pareciam a cor dos botões. Desde 2026-11-24 são o rose-500 (16), um vermelho
+// puxado para o rosa, e o yellow-500 (86), mais claro e mais amarelo. Continuam "urgente" e
+// "atenção", e não se confundem mais com a ação principal da tela.
 .faixa[data-prioridade='ALTA'] {
-  --cor-da-faixa: #c62828;
+  --cor-da-faixa: oklch(64.5% 0.246 16.439);
 }
 
 .faixa[data-prioridade='MEDIA'] {
-  --cor-da-faixa: #ef6c00;
+  --cor-da-faixa: oklch(79.5% 0.184 86.047);
 }
 
 .faixa[data-prioridade='BAIXA'] {
-  --cor-da-faixa: #2e7d32;
+  --cor-da-faixa: oklch(69.6% 0.17 162.48);
+}
+
+.ponto {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  background: var(--cor-da-faixa, var(--neutro-400));
 }
 
 .contagem {
+  margin-left: auto;
+  padding: 0 0.5rem;
+  border-radius: 9999px;
+  background: var(--cor-realce);
   font-size: 0.75rem;
-  opacity: 0.7;
-}
-
-.cartao {
-  margin-bottom: 0.5rem;
-}
-
-.titulo {
-  margin: 0;
   font-weight: 500;
-}
-
-// Concluída fica na lista, riscada: é o registro do que foi feito, não lixo a esconder.
-.cartao.concluida .titulo {
-  text-decoration: line-through;
-  opacity: 0.6;
-}
-
-.descricao {
-  margin: 0.25rem 0 0;
-  font-size: 0.875rem;
-  opacity: 0.8;
-  white-space: pre-wrap;
-}
-
-.marcas {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.status {
-  font-size: 0.75rem;
-  opacity: 0.7;
-}
-
-.vazia {
-  font-size: 0.875rem;
-  opacity: 0.6;
-}
-
-.aviso {
-  margin: 0 0 1rem;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  background: var(--mat-sys-surface-container-high);
-  color: var(--mat-sys-on-surface-variant);
-  font-size: 0.875rem;
+  color: var(--cor-texto-apagado);
 }
 
 // A lista precisa de altura mesmo vazia: faixa vazia e area de soltura, e uma area de
@@ -112,32 +116,26 @@
   min-height: 3rem;
 }
 
-.cartao {
+.tarefa {
+  padding: 0.625rem 1rem;
   cursor: grab;
+  transition: background-color 150ms;
+
+  & + & {
+    border-top: 1px solid var(--cor-divisoria);
+  }
+
+  &:hover {
+    background: light-dark(rgb(var(--neutro-900-rgb) / 0.05), rgb(255 255 255 / 0.05));
+  }
+
+  &:last-child {
+    border-radius: 0 0 8px 8px;
+  }
 }
 
-.lista[aria-disabled='true'] .cartao {
-  cursor: default;
-}
-
-// O card que viaja com o cursor.
-.cdk-drag-preview {
-  border-radius: 0.5rem;
-  box-shadow: var(--mat-sys-level3);
-}
-
-// O buraco que ele deixa no lugar de origem.
-.lugar-vago {
-  min-height: 3.5rem;
-  margin-bottom: 0.5rem;
-  border: 2px dashed var(--mat-sys-outline-variant);
-  border-radius: 0.5rem;
-}
-
-// Sem transicao, os vizinhos saltam de posicao em vez de abrir espaco.
-.cdk-drag-animating,
-.lista.cdk-drop-list-dragging .cartao:not(.cdk-drag-placeholder) {
-  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+.lista[aria-disabled='true'] .tarefa {
+  cursor: pointer;
 }
 
 .linha-do-titulo {
@@ -146,20 +144,78 @@
   gap: 0.25rem;
 }
 
-.linha-do-titulo .titulo {
+.titulo {
   flex: 1 1 auto;
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--cor-texto);
 }
 
-// O botao de acoes some ate o cursor chegar no card, para o card ficar limpo. Em tela de
+// Concluída fica na lista, riscada: é o registro do que foi feito, não lixo a esconder.
+.tarefa.concluida .titulo {
+  text-decoration: line-through;
+  color: var(--cor-texto-apagado);
+}
+
+.descricao {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--cor-texto-apagado);
+  white-space: pre-wrap;
+}
+
+.marcas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+}
+
+.etiqueta {
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--cor-realce);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--cor-texto-suave);
+}
+
+.etiqueta[data-status='EM_ANDAMENTO'] {
+  background: light-dark(oklch(95.1% 0.026 236.824), rgb(5 47 74 / 0.6));
+  color: light-dark(oklch(50% 0.134 242.749), oklch(82.8% 0.111 230.318));
+}
+
+.etiqueta[data-status='CONCLUIDA'] {
+  background: light-dark(oklch(97.9% 0.021 166.113), rgb(0 44 34 / 0.6));
+  color: light-dark(oklch(50.8% 0.118 165.612), oklch(76.5% 0.177 163.223));
+}
+
+.etiqueta.categoria {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--cor-borda);
+}
+
+.vazia {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--cor-texto-apagado);
+}
+
+// O botao de acoes some ate o cursor chegar na linha, para a lista ficar limpa. Em tela de
 // toque nao ha hover, entao ali ele fica sempre visivel.
 .acoes {
-  margin: -0.5rem -0.5rem 0 0;
+  margin: -0.375rem -0.5rem -0.375rem 0;
+  padding: 0.375rem;
   opacity: 0;
   transition: opacity 150ms;
 }
 
-.cartao:hover .acoes,
-.acoes:focus-visible {
+.tarefa:hover .acoes,
+.acoes:focus-visible,
+.acoes[aria-expanded='true'] {
   opacity: 1;
 }
 
@@ -169,18 +225,23 @@
   }
 }
 
-.perigo {
-  color: var(--mat-sys-error);
+// A linha que viaja com o cursor.
+.cdk-drag-preview {
+  border-radius: 8px;
+  background: var(--cor-cabecalho);
+  box-shadow: 0 12px 32px -12px rgb(var(--neutro-900-rgb) / 0.45);
 }
 
-.filtros {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+// O buraco que ela deixa no lugar de origem.
+.lugar-vago {
+  min-height: 3.5rem;
+  margin: 0.25rem 0.5rem;
+  border: 2px dashed light-dark(var(--neutro-300), var(--neutro-700));
+  border-radius: 6px;
 }
 
-.filtros mat-form-field {
-  min-width: 12rem;
+// Sem transicao, os vizinhos saltam de posicao em vez de abrir espaco.
+.cdk-drag-animating,
+.lista.cdk-drop-list-dragging .tarefa:not(.cdk-drag-placeholder) {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
 }

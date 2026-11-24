@@ -1,0 +1,172 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+// A mesma coluna do GeFinX: max-w-5xl, com 1rem de respiro dos lados.
+.conteudo {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.cabecalho {
+  background: var(--cor-cabecalho);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.links {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+
+  @media (min-width: 640px) {
+    display: flex;
+  }
+
+  a {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--cor-texto-suave);
+    transition: background-color 150ms, color 150ms;
+
+    &:hover {
+      background: var(--cor-realce);
+    }
+
+    &.ativo {
+      background: var(--cor-acento);
+      color: #fff;
+    }
+  }
+}
+
+.botao-icone.aberto {
+  background: var(--cor-realce);
+  color: var(--cor-texto);
+}
+
+.pagina {
+  padding-top: 2rem;
+  padding-bottom: 6rem;
+
+  @media (min-width: 640px) {
+    padding-bottom: 2rem;
+  }
+}
+
+.dono {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 14rem;
+  padding: 0.375rem 0.75rem 0.5rem;
+  font-size: 0.875rem;
+  color: var(--cor-texto-apagado);
+}
+
+.nome-do-dono {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.opcao svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+// A barra de abas do celular. Some a partir de 640px, quando os links sobem para o cabeçalho.
+.abas {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 0.75rem;
+  z-index: 10;
+
+  @media (min-width: 640px) {
+    display: none;
+  }
+}
+
+.trilho-das-abas {
+  border-radius: 9999px;
+  padding: 0.375rem;
+}
+
+.abas-por-dentro {
+  position: relative;
+  display: flex;
+}
+
+/*
+  O trilho tem a largura de uma aba e é o que desliza — `translateX` em porcentagem conta a
+  largura do próprio elemento, então 100% é exatamente uma aba —, e a bolha fica centrada
+  dentro dele. A curva passa um pouco do ponto e volta: é essa sobra que faz a bolha parecer
+  líquida, e não uma peça rígida trocando de lugar.
+*/
+.trilho-da-bolha {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform 500ms cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+
+  .bolha {
+    width: 100%;
+    max-width: 6rem;
+    height: 100%;
+    border-radius: 9999px;
+  }
+}
+
+// Verde 700 na ativa e cinza 600 nas demais, um tom mais escuros que no resto da tela: o
+// fundo da barra é translúcido, e o que passa por baixo come parte do contraste. Negrito e a
+// bolha repetem o estado para quem não distingue a cor.
+.aba {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.375rem 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--cor-texto-suave);
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  &.ativa {
+    font-weight: 600;
+    color: var(--cor-acento-texto);
+  }
+}

@@ -9,8 +9,6 @@ import {
 } from '@angular/cdk/drag-drop';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,8 +16,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { mensagemDoErro } from '../../core/erros';
@@ -31,7 +27,6 @@ import {
   Status,
   Tarefa,
 } from '../../core/modelos';
-import { SessaoService } from '../../core/sessao.service';
 import {
   DadosDaConfirmacao,
   DialogoDeConfirmacao,
@@ -56,27 +51,21 @@ import {
     CdkDragPlaceholder,
     CdkDropList,
     CdkDropListGroup,
-    RouterLink,
     MatButtonModule,
     MatButtonToggleModule,
-    MatCardModule,
-    MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
     MatMenuModule,
     MatProgressBarModule,
     MatSelectModule,
-    MatToolbarModule,
   ],
   templateUrl: './tarefas.html',
   styleUrl: './tarefas.scss',
 })
 export class Tarefas implements OnInit {
   private readonly api = inject(ApiService);
-  private readonly sessao = inject(SessaoService);
   private readonly dialogo = inject(MatDialog);
 
-  readonly usuario = this.sessao.usuario;
   readonly faixas = signal<Faixa[]>([]);
   readonly categorias = signal<Categoria[]>([]);
   readonly preferencias = signal<Preferencias | null>(null);
@@ -226,10 +215,6 @@ export class Tarefas implements OnInit {
       this.erro.set(mensagemDoErro(falha));
       await this.carregar();
     }
-  }
-
-  sair(): void {
-    this.sessao.sair();
   }
 
   concluida(tarefa: Tarefa): boolean {

@@ -1,13 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
 import { mensagemDoErro } from '../../core/erros';
 import { SessaoService } from '../../core/sessao.service';
+import { BotaoDeTema } from '../../shared/botao-de-tema';
+import { Logo } from '../../shared/logo';
 
 /**
  * A tela de entrar. Não há cadastro (Decisão 9), então não há link para lugar nenhum: a
@@ -18,10 +19,11 @@ import { SessaoService } from '../../core/sessao.service';
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
-    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatProgressBarModule,
+    BotaoDeTema,
+    Logo,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',

@@ -1,18 +1,37 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
-    <title>Frontend</title>
+    <title>todo-notes</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      A cor da barra do navegador no celular são os mesmos tons do cabeçalho (branco no
+      claro, stone-900 no escuro), para ela parecer continuação da tela.
+    -->
+    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1c1917" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
-      rel="stylesheet"
-    />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <script>
+      /*
+        Roda antes da primeira pintura, e por isso mora aqui em vez de no TemaService:
+        aplicar a classe só depois que o Angular sobe faria a tela piscar branca a cada
+        carregamento para quem usa o tema escuro. Repete a regra do serviço — a preferência
+        gravada manda, e o sistema decide enquanto não houver uma.
+      */
+      (function () {
+        try {
+          var salvo = localStorage.getItem('todo-notes.tema');
+          var escuro = salvo
+            ? salvo === 'escuro'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('dark', escuro);
+        } catch (excecao) {
+          // localStorage bloqueado: o tema claro é um padrão válido.
+        }
+      })();
+    </script>
   </head>
   <body>
     <app-root></app-root>

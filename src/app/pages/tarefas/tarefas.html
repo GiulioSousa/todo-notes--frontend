@@ -1,52 +1,44 @@
-<!-- Sem `color="primary"`: no Material 3 o atributo nao faz nada, e a barra usa a superficie
-     do tema. Deixa-lo sugeriria uma intencao que o framework ignora. -->
-<mat-toolbar>
-  <span>todo-notes</span>
-  <span class="espaco"></span>
-  @if (usuario()) {
-    <span class="dono">{{ usuario() }}</span>
-  }
-  <button matButton="filled" (click)="criar()">Nova tarefa</button>
-  <button matButton routerLink="/preferencias">Preferências</button>
-  <button matButton (click)="sair()">Sair</button>
-</mat-toolbar>
-
 @if (carregando()) {
-  <mat-progress-bar mode="indeterminate" />
+  <mat-progress-bar class="progresso" mode="indeterminate" />
 }
 
-<main class="pagina">
+<div class="tela">
+  <div class="topo">
+    <h1 class="titulo-da-tela">Tarefas</h1>
+
+    <div class="filtros">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Categoria</mat-label>
+        <mat-select
+          [value]="categoriaFiltrada()"
+          (selectionChange)="filtrarPorCategoria($event.value)"
+        >
+          <mat-option [value]="null">Todas</mat-option>
+          @for (categoria of categorias(); track categoria.id) {
+            <mat-option [value]="categoria.id">{{ categoria.nome }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-button-toggle-group
+        [value]="filtroDeConcluidas()"
+        (change)="filtrarConcluidas($event.value)"
+        aria-label="Tarefas concluídas"
+        hideSingleSelectionIndicator
+      >
+        <mat-button-toggle value="PADRAO">Padrão</mat-button-toggle>
+        <mat-button-toggle value="TODAS">Mostrar todas</mat-button-toggle>
+        <mat-button-toggle value="NENHUMA">Ocultar concluídas</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </div>
+
   @if (erro()) {
     <p class="erro" role="alert">
       {{ erro() }}
       <button matButton (click)="carregar()">Tentar de novo</button>
     </p>
   }
-
-  <div class="filtros">
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Categoria</mat-label>
-      <mat-select
-        [value]="categoriaFiltrada()"
-        (selectionChange)="filtrarPorCategoria($event.value)"
-      >
-        <mat-option [value]="null">Todas</mat-option>
-        @for (categoria of categorias(); track categoria.id) {
-          <mat-option [value]="categoria.id">{{ categoria.nome }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-
-    <mat-button-toggle-group
-      [value]="filtroDeConcluidas()"
-      (change)="filtrarConcluidas($event.value)"
-      aria-label="Tarefas concluídas"
-    >
-      <mat-button-toggle value="PADRAO">Padrão</mat-button-toggle>
-      <mat-button-toggle value="TODAS">Mostrar todas</mat-button-toggle>
-      <mat-button-toggle value="NENHUMA">Ocultar concluídas</mat-button-toggle>
-    </mat-button-toggle-group>
-  </div>
 
   @if (!carregando() && !vendoAFaixaCompleta()) {
     <p class="aviso">
@@ -57,8 +49,9 @@
 
   <div class="faixas" cdkDropListGroup>
     @for (faixa of faixas(); track faixa.prioridade) {
-      <section class="faixa" [attr.data-prioridade]="faixa.prioridade">
+      <section class="faixa vidro" [attr.data-prioridade]="faixa.prioridade">
         <h2>
+          <span class="ponto" aria-hidden="true"></span>
           {{ rotuloDaFaixa(faixa) }}
           <span class="contagem">{{ faixa.tarefas.length }}</span>
         </h2>
@@ -73,67 +66,83 @@
           (cdkDropListDropped)="soltar($event)"
         >
           @for (tarefa of faixa.tarefas; track tarefa.id) {
-            <!-- O card inteiro abre a edicao. O CDK engole o clique depois de um arrasto,
+            <!-- A linha inteira abre a edicao. O CDK engole o clique depois de um arrasto,
                  entao soltar um card nao abre o formulario sem querer. -->
-            <mat-card
-              class="cartao"
-              appearance="outlined"
+            <div
+              class="tarefa"
               [class.concluida]="concluida(tarefa)"
               cdkDrag
               [cdkDragData]="tarefa"
               (click)="editar(tarefa)"
             >
-              <mat-card-content>
-                <div class="linha-do-titulo">
-                  <p class="titulo">{{ tarefa.titulo }}</p>
+              <div class="linha-do-titulo">
+                <p class="titulo">{{ tarefa.titulo }}</p>
 
-                  <!-- O clique no menu nao pode subir ate o card, que abre a edicao. -->
-                  <button
-                    matIconButton
-                    class="acoes"
-                    [matMenuTriggerFor]="menu"
-                    (click)="$event.stopPropagation()"
-                    [attr.aria-label]="'Ações de ' + tarefa.titulo"
-                  >
-                    <mat-icon>more_vert</mat-icon>
-                  </button>
+                <!-- O clique no menu nao pode subir ate a linha, que abre a edicao. -->
+                <button
+                  type="button"
+                  class="botao-icone acoes"
+                  [matMenuTriggerFor]="menu"
+                  (click)="$event.stopPropagation()"
+                  [attr.aria-label]="'Ações de ' + tarefa.titulo"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <circle cx="12" cy="5" r="1.75" />
+                    <circle cx="12" cy="12" r="1.75" />
+                    <circle cx="12" cy="19" r="1.75" />
+                  </svg>
+                </button>
 
-                  <mat-menu #menu="matMenu">
-                    @for (status of statusPossiveis; track status) {
-                      <button
-                        mat-menu-item
-                        [disabled]="tarefa.status === status"
-                        (click)="alterarStatus(tarefa, status)"
-                      >
-                        {{ rotuloDoStatus(status) }}
-                      </button>
-                    }
-                    <button mat-menu-item class="perigo" (click)="excluir(tarefa)">Excluir</button>
-                  </mat-menu>
-                </div>
-
-                @if (tarefa.descricao) {
-                  <p class="descricao">{{ tarefa.descricao }}</p>
-                }
-
-                <div class="marcas">
-                  <span class="status">{{ rotuloDoStatus(tarefa.status) }}</span>
-                  @if (tarefa.categoria) {
-                    <mat-chip-set>
-                      <mat-chip>{{ tarefa.categoria.nome }}</mat-chip>
-                    </mat-chip-set>
+                <mat-menu #menu="matMenu" class="menu-vidro" xPosition="before">
+                  @for (status of statusPossiveis; track status) {
+                    <button
+                      mat-menu-item
+                      class="opcao"
+                      [disabled]="tarefa.status === status"
+                      (click)="alterarStatus(tarefa, status)"
+                    >
+                      {{ rotuloDoStatus(status) }}
+                    </button>
                   }
-                </div>
-              </mat-card-content>
+                  <button mat-menu-item class="opcao perigo" (click)="excluir(tarefa)">
+                    Excluir
+                  </button>
+                </mat-menu>
+              </div>
 
-              <!-- O espaco que o card deixa enquanto esta sendo arrastado. -->
+              @if (tarefa.descricao) {
+                <p class="descricao">{{ tarefa.descricao }}</p>
+              }
+
+              <div class="marcas">
+                <span class="etiqueta" [attr.data-status]="tarefa.status">
+                  {{ rotuloDoStatus(tarefa.status) }}
+                </span>
+                @if (tarefa.categoria) {
+                  <span class="etiqueta categoria">{{ tarefa.categoria.nome }}</span>
+                }
+              </div>
+
+              <!-- O espaco que a linha deixa enquanto esta sendo arrastada. -->
               <div class="lugar-vago" *cdkDragPlaceholder></div>
-            </mat-card>
+            </div>
           } @empty {
-            <p class="vazia">Nada aqui.</p>
+            <p class="vazia">Nenhuma tarefa aqui.</p>
           }
         </div>
       </section>
     }
   </div>
-</main>
+</div>
+
+<!-- A acao principal da tela, presa ao canto inferior direito, como no GeFinX: alcancavel
+     de qualquer ponto da rolagem. No celular e um circulo so com o icone, logo acima da
+     barra de abas; a partir de 640px ganha o rotulo por extenso. -->
+<div class="reserva-do-botao" aria-hidden="true"></div>
+<button type="button" class="botao-flutuante" (click)="criar()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+  <span class="rotulo-do-botao">Nova tarefa</span>
+</button>
