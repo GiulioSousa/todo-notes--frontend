@@ -48,6 +48,11 @@
   --cor-cabecalho: light-dark(#fff, var(--neutro-900));
   --cor-borda: light-dark(var(--neutro-200), var(--neutro-800));
   --cor-divisoria: light-dark(var(--neutro-100), var(--neutro-800));
+  // A borda que separa as peças principais — as faixas, os cards e o cabeçalho. Mais
+  // espessa e um tom mais forte que a `--cor-borda`, a pedido, em 2026-11-24: com a de 1px,
+  // o vidro das faixas se perdia no fundo.
+  --cor-borda-destaque: light-dark(var(--neutro-300), var(--neutro-700));
+  --espessura-destaque: 2px;
   --cor-texto: light-dark(var(--neutro-900), var(--neutro-100));
   --cor-texto-forte: light-dark(var(--neutro-700), var(--neutro-300));
   --cor-texto-suave: light-dark(var(--neutro-600), var(--neutro-300));

@@ -13,7 +13,7 @@
 
 .cabecalho {
   background: var(--cor-cabecalho);
-  border-bottom: 1px solid var(--cor-borda);
+  border-bottom: var(--espessura-destaque) solid var(--cor-borda-destaque);
 }
 
 .linha {
