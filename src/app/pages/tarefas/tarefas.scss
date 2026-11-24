@@ -56,6 +56,13 @@
   gap: 1.5rem;
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   align-items: start;
+
+  // Sem isto, com o arrastar desligado pelo filtro, o gesto de arrastar vira seleção de texto
+  // e pinta de azul os cards e os títulos das faixas por onde o cursor passou. Vale para as
+  // faixas inteiras, e não só para os cards, porque a seleção que começa num card se estende
+  // aos vizinhos. O preço é não selecionar o título na lista — e ele continua copiável no
+  // formulário, que abre com um clique na linha.
+  user-select: none;
 }
 
 .faixa {
@@ -226,10 +233,13 @@
 }
 
 // A linha que viaja com o cursor.
+// No escuro, sombra escura sobre fundo escuro quase some: é a borda clara que descola o card
+// da página ali, como no vidro.
 .cdk-drag-preview {
+  border: 1px solid light-dark(var(--cor-borda), rgb(255 255 255 / 0.15));
   border-radius: 8px;
   background: var(--cor-cabecalho);
-  box-shadow: 0 12px 32px -12px rgb(var(--neutro-900-rgb) / 0.45);
+  box-shadow: var(--sombra-flutuante);
 }
 
 // O buraco que ela deixa no lugar de origem.

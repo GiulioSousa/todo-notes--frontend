@@ -138,6 +138,16 @@ html.dark {
   color-scheme: dark;
 }
 
+// A sombra do que flutua sobre a página, como a linha arrastada. `light-dark()` só vale para
+// cores, e a sombra é uma lista: vai por tema, mais escura no escuro para ainda aparecer.
+html {
+  --sombra-flutuante: 0 12px 32px -12px rgb(var(--neutro-900-rgb) / 0.45);
+}
+
+html.dark {
+  --sombra-flutuante: 0 12px 32px -8px rgb(0 0 0 / 0.8);
+}
+
 body {
   background-color: var(--cor-fundo);
   color: var(--cor-texto);
