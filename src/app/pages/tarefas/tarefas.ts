@@ -7,7 +7,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,7 +23,6 @@ import {
   Categoria,
   Faixa,
   FiltroDeConcluidas,
-  Preferencias,
   Status,
   Tarefa,
 } from '../../core/modelos';
@@ -36,13 +35,25 @@ import {
   FormularioDeTarefa,
   ResultadoDoFormulario,
 } from './formulario-de-tarefa';
+import { FIM_DA_FAIXA, posicaoNaFaixa } from './posicao-na-faixa';
+
+/** Onde fica a escolha do filtro de concluídas: estado de tela, como o tema (Seção 8). */
+export const CHAVE_DO_FILTRO = 'todo-notes.concluidas';
+
+/**
+ * Sem escolha gravada, as concluídas ficam ocultas: concluir uma tarefa a tira da lista na
+ * hora, sem ninguém precisar apertar nada. "Mostrar todas" continua a um clique, e a escolha
+ * fica gravada no navegador.
+ */
+export const FILTRO_INICIAL: FiltroDeConcluidas = 'NENHUMA';
 
 /**
  * A lista, em três faixas, com o arrastar.
  *
  * <p><b>A posição que o servidor espera é o índice na faixa inteira</b>, e o que o
- * `cdk/drag-drop` entrega é o índice na lista que está na tela. Os dois são o mesmo número
- * só enquanto nada estiver escondido — por isso {@link vendoAFaixaCompleta}.
+ * `cdk/drag-drop` entrega é o índice na lista que está na tela. Os dois divergem assim que
+ * algum card fica escondido — pelo filtro de concluídas ou pelo de categoria —, e quem os
+ * reconcilia é {@link posicaoNaFaixa}. Por isso o arrastar vale com qualquer filtro.
  */
 @Component({
   selector: 'app-tarefas',
@@ -68,38 +79,11 @@ export class Tarefas implements OnInit {
 
   readonly faixas = signal<Faixa[]>([]);
   readonly categorias = signal<Categoria[]>([]);
-  readonly preferencias = signal<Preferencias | null>(null);
   readonly carregando = signal(true);
   readonly erro = signal<string | null>(null);
 
-  // Ainda sem controles na tela; ficam aqui porque é deles que depende poder arrastar.
   readonly categoriaFiltrada = signal<number | null>(null);
-  readonly filtroDeConcluidas = signal<FiltroDeConcluidas>('PADRAO');
-
-  /**
-   * Só dá para arrastar quando a tela mostra a faixa inteira — a decisão de 2026-11-18.
-   *
-   * <p>Esconder qualquer card faz o índice na tela deixar de ser a posição na faixa, e um
-   * arrastar nessas condições põe o card em lugar diferente do que a pessoa soltou.
-   *
-   * <p>Repare que `PADRAO` depende da **preferência**, e não do filtro: ocultar concluídas
-   * automaticamente esconde cards sem ninguém mexer em nada. Enquanto as preferências não
-   * chegam, o valor é nulo e o arrastar fica desabilitado — o padrão seguro.
-   */
-  readonly vendoAFaixaCompleta = computed(() => {
-    if (this.categoriaFiltrada() !== null) {
-      return false;
-    }
-
-    switch (this.filtroDeConcluidas()) {
-      case 'TODAS':
-        return true;
-      case 'NENHUMA':
-        return false;
-      case 'PADRAO':
-        return this.preferencias()?.ocultarConcluidasAutomaticamente === false;
-    }
-  });
+  readonly filtroDeConcluidas = signal<FiltroDeConcluidas>(filtroGravado());
 
   ngOnInit(): void {
     void this.carregar();
@@ -110,16 +94,15 @@ export class Tarefas implements OnInit {
     this.erro.set(null);
 
     try {
-      // As três juntas: sem as preferências não dá para saber se a faixa está completa, e
-      // sem as categorias o formulário não sabe quais nomes já existem.
-      const [lista, preferencias, categorias] = await Promise.all([
+      // As duas juntas: sem as categorias o formulário não sabe quais nomes já existem. As
+      // preferências deixaram de vir aqui em 2026-11-24 — só serviam para decidir se dava
+      // para arrastar, e o arrastar passou a valer com qualquer filtro.
+      const [lista, categorias] = await Promise.all([
         this.api.listarTarefas(this.categoriaFiltrada(), this.filtroDeConcluidas()),
-        this.api.buscarPreferencias(),
         this.api.listarCategorias(),
       ]);
 
       this.faixas.set(lista.faixas);
-      this.preferencias.set(preferencias);
       this.categorias.set(categorias);
     } catch (falha) {
       this.erro.set(mensagemDoErro(falha));
@@ -164,12 +147,11 @@ export class Tarefas implements OnInit {
       });
 
       if (resultado.prioridade !== tarefa.prioridade) {
-        const destino = this.faixas().find((f) => f.prioridade === resultado.prioridade);
-
+        // O fim da faixa de destino. O tamanho da lista na tela não serve: com cards
+        // escondidos ele é menor que a faixa, e o card pararia no meio dela.
         await this.api.moverTarefa(tarefa.id, {
           prioridade: resultado.prioridade,
-          // O tamanho da faixa antes de o card entrar nela é, por definição, o fim dela.
-          posicao: destino?.tarefas.length ?? 0,
+          posicao: FIM_DA_FAIXA,
         });
       }
 
@@ -191,6 +173,16 @@ export class Tarefas implements OnInit {
     const tarefa = evento.item.data as Tarefa;
     const prioridadeDeDestino = evento.container.data.prioridade;
 
+    // A tradução usa a tela de ANTES do movimento: são as posições que o servidor conhece.
+    const visiveisNoDestino = (
+      this.faixas().find((f) => f.prioridade === prioridadeDeDestino)?.tarefas ?? []
+    ).filter((visivel) => visivel.id !== tarefa.id);
+    const posicao = posicaoNaFaixa(
+      visiveisNoDestino,
+      evento.currentIndex,
+      mesmaFaixa ? tarefa.posicao : null,
+    );
+
     const copia = this.faixas().map((faixa) => ({ ...faixa, tarefas: [...faixa.tarefas] }));
     const origem = copia.find((f) => f.prioridade === evento.previousContainer.data.prioridade);
     const destino = copia.find((f) => f.prioridade === prioridadeDeDestino);
@@ -206,10 +198,7 @@ export class Tarefas implements OnInit {
     this.faixas.set(copia);
 
     try {
-      const resposta = await this.api.moverTarefa(tarefa.id, {
-        prioridade: prioridadeDeDestino,
-        posicao: evento.currentIndex,
-      });
+      const resposta = await this.api.moverTarefa(tarefa.id, { prioridade: prioridadeDeDestino, posicao });
       this.substituirFaixas(resposta.faixas);
     } catch (falha) {
       this.erro.set(mensagemDoErro(falha));
@@ -258,6 +247,11 @@ export class Tarefas implements OnInit {
 
   async filtrarConcluidas(filtro: FiltroDeConcluidas): Promise<void> {
     this.filtroDeConcluidas.set(filtro);
+    try {
+      localStorage.setItem(CHAVE_DO_FILTRO, filtro);
+    } catch {
+      /* armazenamento indisponível: a escolha vale só nesta aba */
+    }
     await this.carregar();
   }
 
@@ -319,12 +313,32 @@ export class Tarefas implements OnInit {
     }
   }
 
-  /** O servidor devolve só as faixas que mudaram; as outras ficam como estão. */
+  /**
+   * O servidor devolve só as faixas que mudaram, e **inteiras, sem filtro**: o `PATCH /lugar`
+   * não conhece os filtros da tela. Por isso a resposta passa pela lista do que já estava à
+   * vista — sem isso, as concluídas ocultas reapareceriam a cada arrastar. Os cards que ficam
+   * levam a posição nova, que é o que a próxima tradução vai usar.
+   */
   private substituirFaixas(afetadas: Faixa[]): void {
+    const aVista = new Set(this.faixas().flatMap((faixa) => faixa.tarefas.map((t) => t.id)));
+
     this.faixas.set(
-      this.faixas().map(
-        (faixa) => afetadas.find((nova) => nova.prioridade === faixa.prioridade) ?? faixa,
-      ),
+      this.faixas().map((faixa) => {
+        const nova = afetadas.find((afetada) => afetada.prioridade === faixa.prioridade);
+        return nova
+          ? { ...nova, tarefas: nova.tarefas.filter((tarefa) => aVista.has(tarefa.id)) }
+          : faixa;
+      }),
     );
+  }
+}
+
+/** O filtro gravado no navegador, ou o inicial. Valor estranho no armazenamento não vale. */
+export function filtroGravado(): FiltroDeConcluidas {
+  try {
+    const salvo = localStorage.getItem(CHAVE_DO_FILTRO);
+    return salvo === 'PADRAO' || salvo === 'TODAS' || salvo === 'NENHUMA' ? salvo : FILTRO_INICIAL;
+  } catch {
+    return FILTRO_INICIAL;
   }
 }

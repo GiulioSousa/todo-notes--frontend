@@ -40,13 +40,6 @@
     </p>
   }
 
-  @if (!carregando() && !vendoAFaixaCompleta()) {
-    <p class="aviso">
-      A ordem não pode ser mudada enquanto a lista esconde tarefas — arrastar aqui poria o
-      card num lugar diferente do que você soltou.
-    </p>
-  }
-
   <div class="faixas" cdkDropListGroup>
     @for (faixa of faixas(); track faixa.prioridade) {
       <section class="faixa vidro" [attr.data-prioridade]="faixa.prioridade">
@@ -62,7 +55,6 @@
           class="lista"
           cdkDropList
           [cdkDropListData]="faixa"
-          [cdkDropListDisabled]="!vendoAFaixaCompleta()"
           (cdkDropListDropped)="soltar($event)"
         >
           @for (tarefa of faixa.tarefas; track tarefa.id) {
