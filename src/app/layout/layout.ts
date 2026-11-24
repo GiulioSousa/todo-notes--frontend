@@ -3,9 +3,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatMenuModule } from '@angular/material/menu';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
-import { SessaoService } from '../../core/sessao.service';
-import { TemaService } from '../../core/tema.service';
-import { Logo, Simbolo } from '../logo';
+import { SessaoService } from '../core/sessao.service';
+import { TemaService } from '../core/tema.service';
+import { Logo, Simbolo } from '../shared/logo';
 
 interface Rota {
   para: string;

@@ -18,7 +18,7 @@ export const routes: Routes = [
   {
     path: '',
     canActivate: [guardaDeSessao],
-    loadComponent: () => import('./shared/layout/layout').then((m) => m.Layout),
+    loadComponent: () => import('./layout/layout').then((m) => m.Layout),
     children: [
       {
         path: 'tarefas',
