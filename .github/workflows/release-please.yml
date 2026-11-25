@@ -10,9 +10,11 @@ name: release-please
 # proprios, e as tags `vX.Y.Z` nao levam nome de componente justamente porque cada
 # repositorio tem a sua.
 #
-# O manifesto nasce em 0.0.0 de proposito: com um `feat` no intervalo, o primeiro PR lanca
-# justamente a 0.1.0 e cria a tag v0.1.0, que e como o projeto deve nascer. Se o manifesto
-# dissesse 0.1.0, o robo entenderia que ela JA saiu e o primeiro lancamento seria 0.2.0.
+# Quem diz a primeira versao e o `initial-version: 0.1.0`, no release-please-config.json, e
+# NAO o manifesto. Com `bootstrap-sha` e sem tag anterior, este e um *initial release*: o robo
+# nao incrementa versao nenhuma, entao o `bump-minor-pre-major` nem chega a ser consultado -
+# sem o `initial-version` ele usa o padrao dele, 1.0.0, que foi o que saiu no primeiro PR, em
+# 2026-11-25. O manifesto fica em 0.0.0 so para o intervalo de commits comecar do inicio.
 
 on:
   push:
