@@ -255,8 +255,12 @@ html.dark .bolha {
   cursor: pointer;
   transition: background-color 150ms;
 
-  &:hover {
-    background: var(--cor-realce);
+  // Em tela de toque o `:hover` gruda: o navegador o mantem aceso depois do toque, ate
+  // tocar em outro lugar. Realce ligado onde ninguem esta apontando so confunde.
+  @media (hover: hover) {
+    &:hover {
+      background: var(--cor-realce);
+    }
   }
 
   svg {
@@ -324,8 +328,12 @@ html.dark .bolha {
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   transition: background-color 150ms;
 
-  &:hover {
-    background: var(--cor-acento-forte);
+  // Em tela de toque o `:hover` gruda: o navegador o mantem aceso depois do toque, ate
+  // tocar em outro lugar. Realce ligado onde ninguem esta apontando so confunde.
+  @media (hover: hover) {
+    &:hover {
+      background: var(--cor-acento-forte);
+    }
   }
 
   &:focus-visible {

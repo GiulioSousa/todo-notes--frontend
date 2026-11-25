@@ -38,8 +38,12 @@
     border-top: var(--espessura-destaque) solid var(--cor-borda);
   }
 
-  &:hover {
-    background: light-dark(rgb(var(--neutro-900-rgb) / 0.05), rgb(255 255 255 / 0.05));
+  // Em tela de toque o `:hover` gruda: o navegador o mantem aceso depois do toque, ate
+  // tocar em outro lugar. Realce ligado onde ninguem esta apontando so confunde.
+  @media (hover: hover) {
+    &:hover {
+      background: light-dark(rgb(var(--neutro-900-rgb) / 0.05), rgb(255 255 255 / 0.05));
+    }
   }
 }
 

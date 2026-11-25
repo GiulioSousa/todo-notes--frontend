@@ -44,8 +44,12 @@
     color: var(--cor-texto-suave);
     transition: background-color 150ms, color 150ms;
 
-    &:hover {
-      background: var(--cor-realce);
+    // Em tela de toque o `:hover` gruda: o navegador o mantem aceso depois do toque, ate
+    // tocar em outro lugar. Realce ligado onde ninguem esta apontando so confunde.
+    @media (hover: hover) {
+      &:hover {
+        background: var(--cor-realce);
+      }
     }
 
     &.ativo {
