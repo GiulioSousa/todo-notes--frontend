@@ -1,5 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -20,6 +27,18 @@ export interface DadosDoFormularioDeCategoria {
 
 /** O limite da coluna `nome`. Deixar o banco recusar daria um 500 onde cabe um aviso. */
 const TAMANHO_MAXIMO = 40;
+
+/**
+ * Nome com só espaços não é nome.
+ *
+ * <p>O `Validators.required` do Angular **não apara**: `"   "` passa por ele, e o formulário
+ * mandaria string vazia para a API, que responderia `400` por um erro que a tela já sabia.
+ * Devolve `required` para o `mat-error` que já existe continuar servindo — o aviso é o mesmo,
+ * "informe o nome", e inventar um segundo seria dizer duas vezes a mesma coisa.
+ */
+function exigeNome(controle: AbstractControl): ValidationErrors | null {
+  return String(controle.value ?? '').trim() ? null : { required: true };
+}
 
 /**
  * O formulário da categoria: um campo só, o nome.
@@ -103,7 +122,7 @@ export class FormularioDeCategoria {
   readonly formulario = new FormGroup({
     nome: new FormControl(this.dados.categoria?.nome ?? '', {
       nonNullable: true,
-      validators: [Validators.required, Validators.maxLength(TAMANHO_MAXIMO)],
+      validators: [exigeNome, Validators.maxLength(TAMANHO_MAXIMO)],
     }),
   });
 
