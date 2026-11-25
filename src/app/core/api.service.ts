@@ -6,7 +6,9 @@ import {
   EdicaoDeTarefa,
   FiltroDeConcluidas,
   ListaDeTarefas,
+  ListaPorCategoria,
   Lugar,
+  LugarNaCategoria,
   NovaTarefa,
   Preferencias,
   Status,
@@ -14,7 +16,7 @@ import {
 } from './modelos';
 
 /**
- * As 12 rotas da API, tipadas. É o único arquivo que conhece caminhos e verbos.
+ * As 14 rotas da API, tipadas. É o único arquivo que conhece caminhos e verbos.
  *
  * <p>As URLs são relativas: em desenvolvimento o `proxy.conf.json` manda `/api` para a
  * `localhost:8080`, e em produção frontend e API saem do mesmo domínio. Nos dois casos o
@@ -46,6 +48,23 @@ export class ApiService {
     return firstValueFrom(this.http.get<ListaDeTarefas>('/api/tarefas', { params: parametros }));
   }
 
+  /**
+   * A mesma lista, agrupada por categoria: um grupo por categoria cadastrada, mesmo vazia, e
+   * o das sem etiqueta no fim.
+   *
+   * <p>Não aceita `categoriaId`: filtrar por categoria uma lista agrupada por categoria é
+   * escolher um grupo, e quem o faz é a tela, rolando até ele.
+   */
+  listarTarefasPorCategoria(
+    concluidas: FiltroDeConcluidas = 'PADRAO',
+  ): Promise<ListaPorCategoria> {
+    const parametros = new HttpParams().set('concluidas', concluidas);
+
+    return firstValueFrom(
+      this.http.get<ListaPorCategoria>('/api/tarefas/por-categoria', { params: parametros }),
+    );
+  }
+
   criarTarefa(tarefa: NovaTarefa): Promise<Tarefa> {
     return firstValueFrom(this.http.post<Tarefa>('/api/tarefas', tarefa));
   }
@@ -60,6 +79,19 @@ export class ApiService {
    */
   moverTarefa(id: number, lugar: Lugar): Promise<ListaDeTarefas> {
     return firstValueFrom(this.http.patch<ListaDeTarefas>(`/api/tarefas/${id}/lugar`, lugar));
+  }
+
+  /**
+   * O arrastar no modo por categoria. Devolve **os grupos afetados** — um, ou dois quando o
+   * card troca de categoria —, já renumerados.
+   *
+   * <p>Soltar o card em outro grupo troca a etiqueta dele, inclusive para nenhuma: é o que
+   * `categoriaId: null` quer dizer. A ordem por prioridade não é tocada.
+   */
+  moverTarefaNaCategoria(id: number, lugar: LugarNaCategoria): Promise<ListaPorCategoria> {
+    return firstValueFrom(
+      this.http.patch<ListaPorCategoria>(`/api/tarefas/${id}/lugar-na-categoria`, lugar),
+    );
   }
 
   alterarStatus(id: number, status: Status): Promise<Tarefa> {

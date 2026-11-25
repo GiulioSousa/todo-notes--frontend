@@ -41,7 +41,7 @@
   color: var(--cor-erro);
 }
 
-.faixas {
+.grupos {
   display: grid;
   gap: 1.5rem;
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
@@ -55,7 +55,7 @@
   user-select: none;
 }
 
-.faixa {
+.grupo {
   border-radius: 8px;
 
   // Vence a borda de 1px do `.vidro`, que vale também para menus e diálogos e fica como está.
@@ -79,27 +79,31 @@
 // A cor é a prioridade, e por isso não vem do tema: ela é semântica. Trocar a paleta não
 // pode mudar o que "alta" significa.
 //
+// O seletor é o atributo solto, e não `.grupo[data-prioridade]`, porque a prioridade aparece
+// em dois lugares: no título do grupo, quando o agrupamento é por prioridade, e na marca do
+// card, quando é por categoria. A mesma cor nos dois, vinda de uma declaração só.
+//
 // Mas precisa ficar longe do acento. Com a terracota (matiz 38), o vermelho (25) e o âmbar
 // (70) de antes pareciam a cor dos botões. Desde 2026-11-24 são o rose-500 (16), um vermelho
 // puxado para o rosa, e o yellow-500 (86), mais claro e mais amarelo. Continuam "urgente" e
 // "atenção", e não se confundem mais com a ação principal da tela.
-.faixa[data-prioridade='ALTA'] {
-  --cor-da-faixa: oklch(64.5% 0.246 16.439);
+[data-prioridade='ALTA'] {
+  --cor-da-prioridade: oklch(64.5% 0.246 16.439);
 }
 
-.faixa[data-prioridade='MEDIA'] {
-  --cor-da-faixa: oklch(79.5% 0.184 86.047);
+[data-prioridade='MEDIA'] {
+  --cor-da-prioridade: oklch(79.5% 0.184 86.047);
 }
 
-.faixa[data-prioridade='BAIXA'] {
-  --cor-da-faixa: oklch(69.6% 0.17 162.48);
+[data-prioridade='BAIXA'] {
+  --cor-da-prioridade: oklch(69.6% 0.17 162.48);
 }
 
 .ponto {
   width: 0.625rem;
   height: 0.625rem;
   border-radius: 9999px;
-  background: var(--cor-da-faixa, var(--neutro-400));
+  background: var(--cor-da-prioridade, var(--neutro-400));
 }
 
 .contagem {
@@ -112,7 +116,7 @@
   color: var(--cor-texto-apagado);
 }
 
-// A lista precisa de altura mesmo vazia: faixa vazia e area de soltura, e uma area de
+// A lista precisa de altura mesmo vazia: grupo vazio e area de soltura, e uma area de
 // zero pixel nao recebe card nenhum.
 .lista {
   min-height: 3rem;
@@ -193,6 +197,25 @@
 .etiqueta.categoria {
   background: transparent;
   box-shadow: inset 0 0 0 1px var(--cor-borda);
+}
+
+// No modo por categoria, a prioridade é a informação do outro agrupamento, e vira marca no
+// card. O ponto é o mesmo do título do grupo no outro modo, na mesma cor — é o que faz as
+// duas telas falarem a mesma língua sem repetir a regra.
+.etiqueta.prioridade {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--cor-borda);
+
+  &::before {
+    content: '';
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 9999px;
+    background: var(--cor-da-prioridade, var(--neutro-400));
+  }
 }
 
 .vazia {

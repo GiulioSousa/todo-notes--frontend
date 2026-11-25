@@ -7,18 +7,34 @@
     <h1 class="titulo-da-tela">Tarefas</h1>
 
     <div class="filtros">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Categoria</mat-label>
-        <mat-select
-          [value]="categoriaFiltrada()"
-          (selectionChange)="filtrarPorCategoria($event.value)"
-        >
-          <mat-option [value]="null">Todas</mat-option>
-          @for (categoria of categorias(); track categoria.id) {
-            <mat-option [value]="categoria.id">{{ categoria.nome }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+      <!-- O agrupamento vem antes dos filtros porque é a escolha mais grossa: ele decide
+           quais grupos existem, e cada modo guarda a sua própria ordem dos cards. -->
+      <mat-button-toggle-group
+        [value]="modo()"
+        (change)="alternarModo($event.value)"
+        aria-label="Agrupar as tarefas por"
+        hideSingleSelectionIndicator
+      >
+        <mat-button-toggle value="PRIORIDADE">Por prioridade</mat-button-toggle>
+        <mat-button-toggle value="CATEGORIA">Por categoria</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <!-- Só no modo por prioridade: filtrar por categoria uma lista agrupada por categoria
+           é escolher um grupo, e para isso basta rolar até ele. -->
+      @if (porPrioridade()) {
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Categoria</mat-label>
+          <mat-select
+            [value]="categoriaFiltrada()"
+            (selectionChange)="filtrarPorCategoria($event.value)"
+          >
+            <mat-option [value]="null">Todas</mat-option>
+            @for (categoria of categorias(); track categoria.id) {
+              <mat-option [value]="categoria.id">{{ categoria.nome }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
 
       <mat-button-toggle-group
         [value]="filtroDeConcluidas()"
@@ -40,24 +56,28 @@
     </p>
   }
 
-  <div class="faixas" cdkDropListGroup>
-    @for (faixa of faixas(); track faixa.prioridade) {
-      <section class="faixa vidro" [attr.data-prioridade]="faixa.prioridade">
+  <!-- Um desenho só para os dois modos: o que muda entre eles é a chave do grupo, e ela ja
+       vem resolvida em `GrupoNaTela`. Dois blocos quase iguais divergiriam no primeiro
+       ajuste de estilo. -->
+  <div class="grupos" cdkDropListGroup>
+    @for (grupo of grupos(); track grupo.chave) {
+      <section class="grupo vidro" [attr.data-prioridade]="grupo.prioridade">
         <h2>
           <span class="ponto" aria-hidden="true"></span>
-          {{ rotuloDaFaixa(faixa) }}
-          <span class="contagem">{{ faixa.tarefas.length }}</span>
+          {{ grupo.rotulo }}
+          <span class="contagem">{{ grupo.tarefas.length }}</span>
         </h2>
 
-        <!-- A lista inteira e area de soltura, inclusive vazia: e por isso que a API
-             devolve sempre as tres faixas. -->
+        <!-- A lista inteira e area de soltura, inclusive vazia: e por isso que a API devolve
+             sempre as tres faixas, e um grupo por categoria cadastrada. No modo por
+             categoria, soltar um card aqui troca a etiqueta dele. -->
         <div
           class="lista"
           cdkDropList
-          [cdkDropListData]="faixa"
+          [cdkDropListData]="grupo"
           (cdkDropListDropped)="soltar($event)"
         >
-          @for (tarefa of faixa.tarefas; track tarefa.id) {
+          @for (tarefa of grupo.tarefas; track tarefa.id) {
             <!-- A linha inteira abre a edicao. O CDK engole o clique depois de um arrasto,
                  entao soltar um card nao abre o formulario sem querer. -->
             <div
@@ -106,12 +126,21 @@
                 <p class="descricao">{{ tarefa.descricao }}</p>
               }
 
+              <!-- A marca do outro agrupamento: no modo por prioridade mostra a categoria,
+                   no modo por categoria mostra a prioridade. A do grupo em que o card esta
+                   seria repetir o titulo do grupo em cada linha dele. -->
               <div class="marcas">
                 <span class="etiqueta" [attr.data-status]="tarefa.status">
                   {{ rotuloDoStatus(tarefa.status) }}
                 </span>
-                @if (tarefa.categoria) {
-                  <span class="etiqueta categoria">{{ tarefa.categoria.nome }}</span>
+                @if (porPrioridade()) {
+                  @if (tarefa.categoria) {
+                    <span class="etiqueta categoria">{{ tarefa.categoria.nome }}</span>
+                  }
+                } @else {
+                  <span class="etiqueta prioridade" [attr.data-prioridade]="tarefa.prioridade">
+                    {{ rotuloDaPrioridade(tarefa.prioridade) }}
+                  </span>
                 }
               </div>
 
