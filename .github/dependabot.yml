@@ -17,17 +17,28 @@ updates:
       prefix: build
     # O Angular sobe em bloco: core, cli, build, material e cdk precisam andar na mesma
     # versao, e PRs separados para cada um nao compilariam sozinhos.
+    #
+    # O typescript e o vitest entram no mesmo bloco desde 2026-11-25, e nao por organizacao:
+    # o @angular/build declara os dois como pares com faixa fechada, e cada versao do Angular
+    # pede uma faixa diferente. O Angular 22 exige typescript >=6.0 <6.1 e aceita vitest 4 ou
+    # 5; o 21 exige <6.0 e so aceita o vitest 4. Separados, os tres PRs ficam vermelhos ao
+    # mesmo tempo e nenhum deles passa sozinho -- foi o que aconteceu com os de 2026-11-24,
+    # descritos no execucao.md.
     groups:
       angular:
         patterns:
           - '@angular/*'
           - '@angular-devkit/*'
+          - 'typescript'
+          - 'vitest'
       rotina:
         patterns:
           - '*'
         exclude-patterns:
           - '@angular/*'
           - '@angular-devkit/*'
+          - 'typescript'
+          - 'vitest'
         update-types:
           - minor
           - patch
