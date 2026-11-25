@@ -16,6 +16,12 @@ name: release-please
 # sem o `initial-version` ele usa o padrao dele, 1.0.0, que foi o que saiu no primeiro PR, em
 # 2026-11-25. O manifesto fica em 0.0.0 so para o intervalo de commits comecar do inicio.
 
+# O `pull-request-title-pattern` existe por causa do conferir-commits.sh. O padrao do robo e
+# `chore${scope}: release${component} ${version}`, e o ${scope} vira o nome do ramo: o commit
+# sai como `chore(main): release 0.1.0`. O `main` nao e bounded context, nao esta na lista de
+# escopos, e o CI reprovou o primeiro merge de release por isso (2026-11-25). Sem escopo, o
+# assunto passa -- e continua Conventional Commits.
+
 on:
   push:
     branches: [main]

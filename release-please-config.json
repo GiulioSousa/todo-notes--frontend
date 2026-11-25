@@ -6,6 +6,7 @@
   "bump-patch-for-minor-pre-major": false,
   "initial-version": "0.1.0",
   "include-component-in-tag": false,
+  "pull-request-title-pattern": "chore: release ${version}",
   "changelog-path": "CHANGELOG.md",
   "extra-files": ["README.md"],
   "packages": {
