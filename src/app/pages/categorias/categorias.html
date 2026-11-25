@@ -1,0 +1,70 @@
+@if (carregando()) {
+  <mat-progress-bar class="progresso" mode="indeterminate" />
+}
+
+<div class="tela">
+  <h1 class="titulo-da-tela">Categorias</h1>
+
+  @if (erro()) {
+    <p class="erro" role="alert">
+      {{ erro() }}
+      <button matButton (click)="carregar()">Tentar de novo</button>
+    </p>
+  }
+
+  <section class="cartao vidro">
+    @for (linha of categorias(); track linha.categoria.id) {
+      <!-- A linha inteira abre a renomeacao, como o card da tarefa abre a edicao. -->
+      <div class="linha" (click)="renomear(linha.categoria)">
+        <span class="nome">{{ linha.categoria.nome }}</span>
+
+        <!-- A contagem nao e enfeite: e o numero que o aviso de exclusao vai dizer, e e o
+             que distingue a categoria em uso da que sobrou de uma ideia antiga. -->
+        <span class="contagem">
+          @if (linha.tarefas === 1) {
+            1 tarefa
+          } @else {
+            {{ linha.tarefas }} tarefas
+          }
+        </span>
+
+        <!-- O clique no menu nao pode subir ate a linha, que abre a renomeacao. -->
+        <button
+          type="button"
+          class="botao-icone acoes"
+          [matMenuTriggerFor]="menu"
+          (click)="$event.stopPropagation()"
+          [attr.aria-label]="'Ações de ' + linha.categoria.nome"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="12" cy="5" r="1.75" />
+            <circle cx="12" cy="12" r="1.75" />
+            <circle cx="12" cy="19" r="1.75" />
+          </svg>
+        </button>
+
+        <mat-menu #menu="matMenu" class="menu-vidro" xPosition="before">
+          <button mat-menu-item class="opcao" (click)="renomear(linha.categoria)">
+            Renomear
+          </button>
+          <button mat-menu-item class="opcao perigo" (click)="excluir(linha)">Excluir</button>
+        </mat-menu>
+      </div>
+    } @empty {
+      <p class="vazia">
+        Nenhuma categoria ainda. Elas agrupam as tarefas no modo de visualização por
+        categoria, e também podem ser criadas de dentro do formulário da tarefa.
+      </p>
+    }
+  </section>
+</div>
+
+<!-- A acao principal da tela, no mesmo lugar da lista de tarefas. -->
+<div class="reserva-do-botao" aria-hidden="true"></div>
+<button type="button" class="botao-flutuante" (click)="criar()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+  <span class="rotulo-do-botao">Nova categoria</span>
+</button>

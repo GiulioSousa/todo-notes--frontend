@@ -42,6 +42,13 @@ export class Layout {
       icone: ['M9 6h11', 'M9 12h11', 'M9 18h11', 'M4 6l1 1 2-2', 'M4 12l1 1 2-2', 'M4 18l1 1 2-2'],
     },
     {
+      para: '/categorias',
+      rotulo: 'Categorias',
+      // Uma etiqueta, com o furo: é o que a categoria é no card, e o desenho repete a marca
+      // que aparece na linha da tarefa.
+      icone: ['M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z', 'M7 7h.01'],
+    },
+    {
       para: '/preferencias',
       rotulo: 'Preferências',
       icone: ['M4 21v-7', 'M4 10V3', 'M12 21v-9', 'M12 8V3', 'M20 21v-5', 'M20 12V3', 'M1 14h6', 'M9 8h6', 'M17 16h6'],

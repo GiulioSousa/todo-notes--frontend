@@ -27,15 +27,6 @@
         }
       </mat-form-field>
 
-      <!-- O aviso de que o arrastar depende disto: e consequencia da decisao de
-           2026-11-18, e melhor dizer antes do que surpreender depois. -->
-      @if (formulario.controls.ocultarConcluidasAutomaticamente.value) {
-        <p class="aviso">
-          Enquanto esta opção estiver ligada, a lista esconde tarefas — e o arrastar fica
-          desabilitado, porque a ordem na tela deixa de ser a ordem real da faixa.
-        </p>
-      }
-
       @if (erro()) {
         <p class="erro" role="alert">{{ erro() }}</p>
       }

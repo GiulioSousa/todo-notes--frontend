@@ -1,0 +1,90 @@
+.tela {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.erro {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--cor-erro);
+}
+
+// O cartão é a lista inteira, e não um por categoria: a lista de etiquetas se lê de cima a
+// baixo, e uma moldura por linha competiria com os cards da tela de tarefas, que são a coisa
+// a que se presta atenção neste aplicativo.
+.cartao {
+  border-radius: 8px;
+  overflow: hidden;
+
+  // Vence a borda de 1px do `.vidro`, como as faixas da lista de tarefas.
+  &.vidro {
+    border: var(--espessura-destaque) solid var(--cor-borda-destaque);
+  }
+}
+
+.linha {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 150ms;
+
+  & + & {
+    border-top: var(--espessura-destaque) solid var(--cor-borda);
+  }
+
+  &:hover {
+    background: light-dark(rgb(var(--neutro-900-rgb) / 0.05), rgb(255 255 255 / 0.05));
+  }
+}
+
+.nome {
+  flex: 1 1 auto;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--cor-texto);
+}
+
+.contagem {
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--cor-realce);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--cor-texto-apagado);
+}
+
+.vazia {
+  margin: 0;
+  padding: 1rem;
+  max-width: 34rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--cor-texto-apagado);
+}
+
+// Como na lista de tarefas: o botão de ações some até o cursor chegar na linha, e em tela de
+// toque fica sempre visível, porque ali não há hover.
+.acoes {
+  margin: -0.375rem -0.5rem;
+  padding: 0.375rem;
+  opacity: 0;
+  transition: opacity 150ms;
+}
+
+.linha:hover .acoes,
+.acoes:focus-visible,
+.acoes[aria-expanded='true'] {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .acoes {
+    opacity: 1;
+  }
+}

@@ -26,6 +26,11 @@ export const routes: Routes = [
         title: 'Tarefas - todo-notes',
       },
       {
+        path: 'categorias',
+        loadComponent: () => import('./pages/categorias/categorias').then((m) => m.Categorias),
+        title: 'Categorias - todo-notes',
+      },
+      {
         path: 'preferencias',
         loadComponent: () =>
           import('./pages/preferencias/preferencias').then((m) => m.TelaDePreferencias),
@@ -37,6 +42,6 @@ export const routes: Routes = [
 
   // Qualquer outro caminho cai na lista, e a guarda decide: quem tem sessão vê as tarefas,
   // quem não tem vai para o login. Uma tela de "não encontrado" diria pouco num aplicativo
-  // de duas telas.
+  // de três telas.
   { path: '**', redirectTo: 'tarefas' },
 ];
