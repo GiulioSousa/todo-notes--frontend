@@ -22,6 +22,11 @@ name: release-please
 # escopos, e o CI reprovou o primeiro merge de release por isso (2026-11-25). Sem escopo, o
 # assunto passa -- e continua Conventional Commits.
 
+# O `always-update` vem junto, e pelo mesmo caso. Por padrao o robo so mexe no PR de release
+# quando as notas mudam, e commit de tipo oculto (ci, build, docs) nao muda nada: o PR fica
+# com o titulo e o commit antigos, que e o que o conserto acima queria trocar. Com ele, o PR
+# acompanha o main a cada execucao.
+
 on:
   push:
     branches: [main]
