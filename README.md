@@ -68,7 +68,7 @@ no bundle inicial.
 Versão deste repositório:
 
 <!-- x-release-please-start-version -->
-0.0.0
+0.1.0
 <!-- x-release-please-end -->
 
 Quem escreve essa linha, a versão do `package.json`, as tags e o `CHANGELOG.md` é o
