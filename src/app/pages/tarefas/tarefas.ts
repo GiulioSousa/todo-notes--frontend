@@ -1,6 +1,7 @@
 import {
   CdkDrag,
   CdkDragDrop,
+  CdkDragHandle,
   CdkDragPlaceholder,
   CdkDropList,
   CdkDropListGroup,
@@ -93,6 +94,7 @@ export interface GrupoNaTela {
   selector: 'app-tarefas',
   imports: [
     CdkDrag,
+    CdkDragHandle,
     CdkDragPlaceholder,
     CdkDropList,
     CdkDropListGroup,

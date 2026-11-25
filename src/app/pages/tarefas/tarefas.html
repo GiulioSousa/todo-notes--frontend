@@ -78,8 +78,10 @@
           (cdkDropListDropped)="soltar($event)"
         >
           @for (tarefa of grupo.tarefas; track tarefa.id) {
-            <!-- A linha inteira abre a edicao. O CDK engole o clique depois de um arrasto,
-                 entao soltar um card nao abre o formulario sem querer. -->
+            <!-- A linha inteira abre a edicao; arrastar comeca so na alca, na direita. Antes o card
+                 todo era a area de arrasto, e as duas acoes dividiam a mesma superficie:
+                 no celular, deslizar o dedo sobre uma tarefa arrastava em vez de rolar a
+                 lista, e nada na tela dizia que o card podia ser movido. -->
             <div
               class="tarefa"
               [class.concluida]="concluida(tarefa)"
@@ -106,20 +108,25 @@
                 </button>
 
                 <mat-menu #menu="matMenu" class="menu-vidro" xPosition="before">
-                  @for (status of statusPossiveis; track status) {
-                    <button
-                      mat-menu-item
-                      class="opcao"
-                      [disabled]="tarefa.status === status"
-                      (click)="alterarStatus(tarefa, status)"
-                    >
-                      {{ rotuloDoStatus(status) }}
-                    </button>
-                  }
                   <button mat-menu-item class="opcao perigo" (click)="excluir(tarefa)">
                     Excluir
                   </button>
                 </mat-menu>
+
+                <!-- A alca fecha a linha, na quina do card. O clique nela nao pode subir ate a
+                     linha, que abre a edicao: um arrasto que termina sem sair do lugar
+                     continua sendo um clique. -->
+                <button
+                  type="button"
+                  class="botao-icone alca"
+                  cdkDragHandle
+                  (click)="$event.stopPropagation()"
+                  [attr.aria-label]="'Mover ' + tarefa.titulo"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M20 9H4v2h16V9zM4 15h16v-2H4v2z" />
+                  </svg>
+                </button>
               </div>
 
               @if (tarefa.descricao) {
@@ -130,9 +137,36 @@
                    no modo por categoria mostra a prioridade. A do grupo em que o card esta
                    seria repetir o titulo do grupo em cada linha dele. -->
               <div class="marcas">
-                <span class="etiqueta" [attr.data-status]="tarefa.status">
+                <!-- A etiqueta de status E o controle: toca-se nela para trocar. Antes isso vivia
+                     no menu de tres pontinhos, que e idioma de desktop e, no celular, escondia
+                     a acao mais comum do card atras de um alvo de 32px. Mexer no proprio dado
+                     dispensa decorar onde ele mora. -->
+                <button
+                  type="button"
+                  class="etiqueta status"
+                  [attr.data-status]="tarefa.status"
+                  [matMenuTriggerFor]="menuDeStatus"
+                  (click)="$event.stopPropagation()"
+                  [attr.aria-label]="'Status de ' + tarefa.titulo + ': ' + rotuloDoStatus(tarefa.status) + '. Alterar'"
+                >
                   {{ rotuloDoStatus(tarefa.status) }}
-                </span>
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M7 10l5 5 5-5z" />
+                  </svg>
+                </button>
+
+                <mat-menu #menuDeStatus="matMenu" class="menu-vidro">
+                  @for (status of statusPossiveis; track status) {
+                    <button
+                      mat-menu-item
+                      class="opcao"
+                      [disabled]="tarefa.status === status"
+                      (click)="alterarStatus(tarefa, status)"
+                    >
+                      {{ rotuloDoStatus(status) }}
+                    </button>
+                  }
+                </mat-menu>
                 @if (porPrioridade()) {
                   @if (tarefa.categoria) {
                     <span class="etiqueta categoria">{{ tarefa.categoria.nome }}</span>
