@@ -1,0 +1,30 @@
+# Normalizacao de fim de linha. Sem isto, o que entra no repositorio e o que o editor de
+# cada maquina escreveu.
+#
+# POR QUE ISTO EXISTE
+#
+# O `core.autocrlf=true` do Git para Windows normaliza na entrada, mas e configuracao de
+# maquina: quem clonar com autocrlf=false e um editor que grava CRLF publica CRLF, e o diff
+# seguinte mostra o arquivo inteiro trocado. O `* text=auto` tira essa decisao do ambiente --
+# o Git guarda LF e devolve ao disco o fim de linha da plataforma.
+#
+# Em 2026-11-25 a falta disto cobrou o preco: o PR do apache-maven trouxe o `mvnw.cmd`
+# gravado com CRLF NO REPOSITORIO, e desde entao ele aparecia modificado no `git status` sem
+# ninguem o ter tocado -- o autocrlf normaliza para LF ao comparar, e a comparacao nunca
+# fechava. O `git add --renormalize .` feito junto com este arquivo reescreveu o blob.
+
+* text=auto
+
+# Scripts que rodam em Linux, no CI. LF sempre, mesmo em checkout no Windows.
+*.sh text eol=lf
+
+# Lote do Windows: CRLF sempre.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binarios: nunca converter.
+*.ico binary
+*.png binary
+*.jpg binary
+*.woff binary
+*.woff2 binary
