@@ -93,8 +93,11 @@ jobs:
       - name: Preparar o Node
         uses: actions/setup-node@v7
         with:
-          # Angular 21 pede ^20.19, ^22.12 ou ^24. A 22 e a LTS do momento.
-          node-version: '22'
+          # A 24, e nao a 22, desde 2026-11-26. O Angular 22 pede `^22.22.3 || ^24.15.0 ||
+          # >=26`, e o `node-version: '22'` do setup-node entrega a ultima 22.x do runner, que
+          # pode estar abaixo da 22.22.3. O Angular 21, que esta no main hoje, aceita ^24 -
+          # entao a 24 serve aos dois, e e por onde o PR do grupo precisa passar.
+          node-version: '24'
           cache: npm
 
       # `npm ci` e nao `npm install`: instala exatamente o package-lock.json, e falha se ele
