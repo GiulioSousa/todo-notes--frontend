@@ -24,6 +24,20 @@ updates:
     # 5; o 21 exige <6.0 e so aceita o vitest 4. Separados, os tres PRs ficam vermelhos ao
     # mesmo tempo e nenhum deles passa sozinho -- foi o que aconteceu com os de 2026-11-24,
     # descritos no execucao.md.
+
+    # O agrupamento nao basta sozinho: ele junta os pacotes num PR so, mas pega sempre a
+    # ultima versao de cada um, e nao um conjunto que se encaixe. Em 2026-11-26 o grupo veio
+    # com typescript 7.0.2 e o `npm ci` reprovou, porque o @angular/compiler-cli 22 e o
+    # @angular/build 22 pedem `>=6.0 <6.1` -- conferido no registro do npm, nao de memoria.
+    #
+    # Entao o typescript para na faixa que o Angular aceita. NAO e trava permanente: no dia
+    # em que o Angular suportar a 7, esta regra sai, e e o PR vermelho do grupo que vai
+    # avisar. O vitest nao precisa de regra: o @angular/build 22 aceita `^4.0.8 || ^5.0.0`.
+    ignore:
+      - dependency-name: 'typescript'
+        versions:
+          - '>= 7'
+
     groups:
       angular:
         patterns:
