@@ -18,11 +18,11 @@ dela.
 
 | Peça | Versão |
 | --- | --- |
-| Angular | 21.2.0 |
-| Angular Material | 21.2.14 |
-| Angular CDK | 21.2.14 |
-| TypeScript | 5.9.2 |
-| Vitest | 4.0.8 |
+| Angular | 22.3.0 |
+| Angular Material | 22.3.0 |
+| Angular CDK | 22.3.0 |
+| TypeScript | 6.0.3 |
+| Vitest | 5.1.1 |
 
 <!-- versoes:fim -->
 
